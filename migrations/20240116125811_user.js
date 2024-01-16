@@ -10,7 +10,7 @@ const Sequelize = require("sequelize");
 const info = {
   revision: 1,
   name: "user",
-  created: "2024-01-16T12:18:29.954Z",
+  created: "2024-01-16T12:58:11.754Z",
   comment: "",
 };
 
@@ -27,7 +27,7 @@ const migrationCommands = (transaction) => [
           primaryKey: true,
           allowNull: false,
         },
-        name: { type: Sequelize.STRING, field: "name" },
+        userName: { type: Sequelize.STRING, field: "userName" },
         email: { type: Sequelize.STRING, field: "email", allowNull: false },
         password: { type: Sequelize.STRING, field: "password" },
         createdAt: {

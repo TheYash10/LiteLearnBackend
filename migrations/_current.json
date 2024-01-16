@@ -39,6 +39,6 @@
     },
     "path": "/home/yashjariwala/WEB/LiteLearn/Backend/migrations/_current.json",
     "backupPath": "/home/yashjariwala/WEB/LiteLearn/Backend/migrations/_current_bak.json",
-    "exists": true,
-    "revision": 2
+    "exists": false,
+    "revision": 1
 }
