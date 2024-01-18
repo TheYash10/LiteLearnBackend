@@ -2,10 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models").User;
 
-// Register a user
 const registerUser = async (req, res) => {
-  // console.log("here we are");
-
   const { userName, password, email } = req.body;
 
   if (!userName || !password || !email) {
@@ -14,7 +11,6 @@ const registerUser = async (req, res) => {
       message: "All Fields are Mandatory!",
     });
   } else {
-    // console.log(req.body)
     try {
       const existingUser = await User.findOne({
         where: {
@@ -70,7 +66,6 @@ const loginUser = async (req, res) => {
 
     if (user && (await bcrypt.compare(password, user.password))) {
       const secretKey = process.env.ACCESS_SECRET_TOKEN;
-      // console.log(secretKey);
 
       const accessToken = jwt.sign(
         {
@@ -83,16 +78,18 @@ const loginUser = async (req, res) => {
         secretKey
       );
 
-      return res.status(200).json({
-        status: true,
-        message: "Authentication successful",
-        token: accessToken,
-        userDetails: {
-          userName: user.userName,
-          email: user.email,
-          id: user.id,
-        },
-      });
+      res
+        .cookie("access_token", accessToken, { httpOnly: true })
+        .status(200)
+        .json({
+          status: true,
+          message: "Authentication successful",
+          user: {
+            userName: user.userName,
+            email: user.email,
+            id: user.id,
+          },
+        });
     } else {
       return res.status(401).json({
         status: false,
@@ -110,8 +107,6 @@ const loginUser = async (req, res) => {
 
 // Get Current User
 const currentUser = async (req, res) => {
-  // console.log("hiii")
-  // console.log(req.user)
   res.json({ status: true, user: req.user });
 };
 
