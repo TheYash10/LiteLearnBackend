@@ -127,40 +127,32 @@ const forgotPassword = async (req, res) => {
         message: "User with this email does not exists",
       });
     }
-    if (user && (await bcrypt.compare(password, user.password))) {
-      const secretKey = process.env.ACCESS_SECRET_TOKEN;
-      const token = jwt.sign(
-        {
-          user: {
-            userName: user.userName,
-            email: user.email,
-            id: user.id,
-          },
+
+    const secretKey = process.env.ACCESS_SECRET_TOKEN;
+    const token = jwt.sign(
+      {
+        user: {
+          userName: user.userName,
+          email: user.email,
+          id: user.id,
         },
-        secretKey,
-        {
-          expiresIn: "5m",
-        }
-      );
+      },
+      secretKey,
+      {
+        expiresIn: "5m",
+      }
+    );
 
-      const data = sendResetPasswordEmail(user.id, token, user.email);
+    const data = sendResetPasswordEmail(user.id, token, user.email);
 
-      data
-        .then((response) => {
-          console.log(response);
-          if (response.rejected && response.rejected.length === 0)
-            res.status(200).json({
-              status: true,
-              message: "Check your email to reset the password",
-            });
-        })
-        .catch((err) => {
-          res.status(500).json({
-            status: false,
-            message: "Internal Server Error",
-          });
+    data.then((response) => {
+      console.log(response);
+      if (response.rejected && response.rejected.length === 0)
+        res.status(200).json({
+          status: true,
+          message: "Check your email to reset the password",
         });
-    }
+    });
   } catch (error) {
     console.log("Error ", error);
 
@@ -204,11 +196,17 @@ const resetPassword = async (req, res) => {
 
     const response = await user.update({ password: hashedNewPassword });
 
-    console.log(response);
-
-    return res.status(200).json({
-      status: true,
-    });
+    if (response) {
+      return res.status(200).json({
+        status: true,
+        message: "Your Password is updated Successfully",
+      });
+    } else {
+      return res.status(500).json({
+        status: true,
+        message: "Internal Server Error",
+      });
+    }
   } catch (err) {
     return res.status(500).json({
       status: false,
