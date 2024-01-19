@@ -6,9 +6,8 @@
                 "id": {
                     "allowNull": false,
                     "primaryKey": true,
-                    "autoIncrement":true,
                     "field": "id",
-                    "seqType": "Sequelize.INTEGER"
+                    "seqType": "Sequelize.UUID"
                 },
                 "userName": {
                     "field": "userName",

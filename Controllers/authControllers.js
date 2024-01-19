@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const uuid = require("uuid");
 const User = require("../models").User;
 
 const registerUser = async (req, res) => {
@@ -22,6 +23,7 @@ const registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await User.create({
+          id: uuid.v4(),
           userName,
           password: hashedPassword,
           email,
@@ -79,7 +81,7 @@ const loginUser = async (req, res) => {
       );
 
       res
-        .cookie("access_token", accessToken, { httpOnly: true })
+        .cookie("access_token", accessToken)
         .status(200)
         .json({
           status: true,
