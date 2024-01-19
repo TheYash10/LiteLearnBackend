@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const validateToken = (req,res,next)=>{
     let token;
   let authHeader = req.headers.Authorization || req.headers.authorization;
-  console.log(authHeader);
+//   console.log(authHeader);
 
   if(authHeader && authHeader.startsWith("Bearer"))
   {
@@ -17,7 +17,7 @@ const validateToken = (req,res,next)=>{
                 message:"User is not Authorized"
             })
         }
-        console.log(decoded)
+        // console.log(decoded)
         req.user = decoded.user
         next();
     });
