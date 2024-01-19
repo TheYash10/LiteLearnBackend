@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const uuid = require("uuid");
 const User = require("../models").User;
-const sendResetPasswordEmail = require('../middleware/nodeMailer')
+const sendResetPasswordEmail = require("../middleware/nodeMailer");
 
 const registerUser = async (req, res) => {
   const { userName, password, email } = req.body;
@@ -114,8 +114,7 @@ const currentUser = async (req, res) => {
 };
 
 // Forgot Password
-const forgotPassword = async (req, res) => 
-{
+const forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({
@@ -123,11 +122,12 @@ const forgotPassword = async (req, res) =>
     });
 
     if (!user) {
-      return res.status(404).json({ status: false, message: "User with this email does not exists" })
+      return res.status(404).json({
+        status: false,
+        message: "User with this email does not exists",
+      });
     }
-    if (user && await bcrypt.compare(password, user.password)) {
-
-
+    if (user && (await bcrypt.compare(password, user.password))) {
       const secretKey = process.env.ACCESS_SECRET_TOKEN;
       const token = jwt.sign(
         {
@@ -139,88 +139,88 @@ const forgotPassword = async (req, res) =>
         },
         secretKey,
         {
-          expiresIn: "5m"
+          expiresIn: "5m",
         }
       );
 
-      const data = sendResetPasswordEmail(user.id, token, user.email)
+      const data = sendResetPasswordEmail(user.id, token, user.email);
 
-      data.then((response) => {
-        console.log(response)
-        if (response.rejected && response.rejected.length === 0)
-          res.status(200).json({
-            status: true,
-            message: "Check your email to reset the password"
-          })
-      }).catch((err) => {
-        res.status(500).json({
-          status: false,
-          message: "Internal Server Error"
+      data
+        .then((response) => {
+          console.log(response);
+          if (response.rejected && response.rejected.length === 0)
+            res.status(200).json({
+              status: true,
+              message: "Check your email to reset the password",
+            });
         })
-      })
-
+        .catch((err) => {
+          res.status(500).json({
+            status: false,
+            message: "Internal Server Error",
+          });
+        });
     }
   } catch (error) {
-
     console.log("Error ", error);
 
     return res.status(500).json({
       status: false,
       message: "Error during authentication",
     });
-
   }
-}
+};
 
-  // Reset Password
-  const resetPassword = async (req, res) => {
-    let userId;
+// Reset Password
+const resetPassword = async (req, res) => {
+  let userId;
 
-    const { resetToken, newPassword } = req.body;
-    try 
-    {
-      jwt.verify(resetToken, process.env.ACCESS_SECRET_TOKEN, (error, decoded) => {
+  const { resetToken, newPassword } = req.body;
+  try {
+    jwt.verify(
+      resetToken,
+      process.env.ACCESS_SECRET_TOKEN,
+      (error, decoded) => {
         if (error) {
           return res.status(408).json({
             status: false,
-            message: "Request Timeout"
-          })
+            message: "Request Timeout",
+          });
         }
 
         // req.user = decoded.user
 
-        userId = decoded.user.id
-      })
+        userId = decoded.user.id;
+      }
+    );
 
+    const user = await User.findOne({
+      where: {
+        id: userId,
+      },
+    });
 
-      const user = await User.findOne({
-        where: {
-          id: userId
-        }
-      });
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    const response = await user.update({ password: hashedNewPassword });
 
-      const response = await user.update({ password: hashedNewPassword })
+    console.log(response);
 
-      console.log(response)
-
-      return res.status(200).json({
-        status: true
-      })
-    } catch (err) {
-      return res.status(500).json({
-        status: false,
-        message: "Error during authentication",
-      });
-    }
-
+    return res.status(200).json({
+      status: true,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      status: false,
+      message: "Error during authentication",
+    });
   }
+};
 
-  module.exports = {
-    registerUser,
-    loginUser,
-    currentUser,
-    forgotPassword,
-    resetPassword
-  }
+module.exports = {
+  registerUser,
+  loginUser,
+  currentUser,
+  forgotPassword,
+  resetPassword,
+};
