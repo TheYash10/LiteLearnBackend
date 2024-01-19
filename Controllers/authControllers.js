@@ -125,9 +125,7 @@ const forgotPassword = async (req, res) =>
     if (!user) {
       return res.status(404).json({ status: false, message: "User with this email does not exists" })
     }
-    if (user && await bcrypt.compare(password, user.password)) {
-
-
+  
       const secretKey = process.env.ACCESS_SECRET_TOKEN;
       const token = jwt.sign(
         {
@@ -158,8 +156,6 @@ const forgotPassword = async (req, res) =>
           message: "Internal Server Error"
         })
       })
-
-    }
   } catch (error) {
 
     console.log("Error ", error);
@@ -203,11 +199,20 @@ const forgotPassword = async (req, res) =>
 
       const response = await user.update({ password: hashedNewPassword })
 
-      console.log(response)
-
+      if(response)
+      {
       return res.status(200).json({
-        status: true
+        status: true,
+        message:"Your Password is updated Successfully"
       })
+    }
+    else
+    {
+      return res.status(500).json({
+        status: true,
+        message:"Internal Server Error"
+      })
+    }
     } catch (err) {
       return res.status(500).json({
         status: false,
