@@ -21,11 +21,10 @@ const migrationCommands = (transaction) => [
       "Users",
       {
         id: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.UUID,
           field: "id",
           primaryKey: true,
           allowNull: false,
-          autoIncrement: true,
         },
         userName: { type: Sequelize.STRING, field: "userName" },
         email: { type: Sequelize.STRING, field: "email", allowNull: false },
