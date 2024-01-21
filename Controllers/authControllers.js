@@ -32,20 +32,20 @@ const registerUser = async (req, res) => {
 
         return res.status(200).json({
           status: true,
-          message: "User Registered",
+          message: `Hii, ${newUser.userName}, Welcome to LiteLearn. (Signed Up Successfully.)`,
           user: newUser,
         });
       } else {
         return res.status(409).json({
           status: false,
-          message: "Email is already in use",
+          message: "Email-Id is already in use.",
         });
       }
     } catch (error) {
       console.error(error);
       return res.status(500).json({
         status: false,
-        message: "Failed to register user",
+        message: "Something went wrong! sign-up failed.",
       });
     }
   }
@@ -72,11 +72,7 @@ const loginUser = async (req, res) => {
 
       const accessToken = jwt.sign(
         {
-          user: {
-            userName: user.userName,
-            email: user.email,
-            id: user.id,
-          },
+          id: user.id,
         },
         secretKey
       );
@@ -86,7 +82,7 @@ const loginUser = async (req, res) => {
         .status(200)
         .json({
           status: true,
-          message: "Authentication successful",
+          message: `Hii, ${user.userName}. Welcome Back !! (Signed In Successfully.)`,
           user: {
             userName: user.userName,
             email: user.email,
@@ -110,7 +106,7 @@ const loginUser = async (req, res) => {
 
 // Get Current User
 const currentUser = async (req, res) => {
-  res.json({ status: true, user: req.user });
+  res.json({ status: true, message: "Response OK" });
 };
 
 // Forgot Password
@@ -131,11 +127,7 @@ const forgotPassword = async (req, res) => {
     const secretKey = process.env.ACCESS_SECRET_TOKEN;
     const token = jwt.sign(
       {
-        user: {
-          userName: user.userName,
-          email: user.email,
-          id: user.id,
-        },
+        id: user.id,
       },
       secretKey,
       {
@@ -181,9 +173,7 @@ const resetPassword = async (req, res) => {
           return;
         }
 
-        // req.user = decoded.user
-
-        userId = decoded.user.id;
+        userId = decoded.id;
       }
     );
 
@@ -216,10 +206,64 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const signInWithGoogleCredentials = async (req, res) => {
+  const { userName, email } = req.body;
+
+  try {
+    const user = await User.findOne({
+      where: {
+        email,
+      },
+    });
+
+    if (user) {
+      //Already Existing User => Perform SignIn
+      const token = jwt.sign({ id: user.id }, process.env.ACCESS_SECRET_TOKEN);
+
+      const { password, ...reqUserData } = user;
+
+      res
+        .cookie("access_token", token)
+        .status(200)
+        .json({
+          statue: true,
+          message: `Hii, ${user.userName}. Welcome Back !! (Signed In Successfully.)`,
+          user: reqUserData,
+        });
+    } else {
+      //New User => Perform SignUp
+      const newUser = await User.create({
+        id: uuid.v4(),
+        userName,
+        email,
+      });
+
+      const token = jwt.sign(
+        { id: newUser.id },
+        process.env.ACCESS_SECRET_TOKEN
+      );
+
+      res
+        .cookie("access_token", token)
+        .status(200)
+        .json({
+          status: true,
+          message: `Hii, ${newUser.userName}, Welcome to LiteLearn. (Signed Up Successfully.)`,
+        });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: "Some thing went wrong, while sign-in with google.",
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   currentUser,
   forgotPassword,
   resetPassword,
+  signInWithGoogleCredentials,
 };

@@ -1,22 +1,33 @@
-const Express = require('express')
+const Express = require("express");
 
-const {registerUser,loginUser,currentUser,forgotPassword,resetPassword} = require("../Controllers/authControllers.js");
-const validateToken = require('../middleware/validateToken.js');
+const {
+  registerUser,
+  loginUser,
+  currentUser,
+  forgotPassword,
+  resetPassword,
+  signInWithGoogleCredentials,
+} = require("../Controllers/authControllers.js");
+const validateToken = require("../middleware/validateToken.js");
 
 const router = Express.Router();
 
 // Register a User
-router.post('/register',registerUser);
+router.post("/register", registerUser);
 
 // Login a user
-router.post('/login',loginUser)
+router.post("/login", loginUser);
 
 // current user
-router.get('/current',validateToken,currentUser)
+router.get("/current", validateToken, currentUser);
 
 // Forgot password
-router.post('/forgot-password',forgotPassword)
+router.post("/forgot-password", forgotPassword);
 
-router.post('/reset-password',resetPassword)
+// Reset Password
+router.post("/reset-password", resetPassword);
 
-module.exports=router
+// Sign-In with Google
+router.post("/signin-with-google", signInWithGoogleCredentials);
+
+module.exports = router;
