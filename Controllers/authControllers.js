@@ -212,7 +212,7 @@ const signInWithGoogleCredentials = async (req, res) => {
   try {
     const user = await User.findOne({
       where: {
-        email,
+        email: email,
       },
     });
 
@@ -220,7 +220,8 @@ const signInWithGoogleCredentials = async (req, res) => {
       //Already Existing User => Perform SignIn
       const token = jwt.sign({ id: user.id }, process.env.ACCESS_SECRET_TOKEN);
 
-      const { password, ...reqUserData } = user;
+      const { password, createdAt, updatedAt, ...reqUserData } =
+        user.dataValues;
 
       res
         .cookie("access_token", token)
@@ -243,12 +244,16 @@ const signInWithGoogleCredentials = async (req, res) => {
         process.env.ACCESS_SECRET_TOKEN
       );
 
+      const { password, createdAt, updatedAt, ...reqUserData } =
+        newUser.dataValues;
+
       res
         .cookie("access_token", token)
         .status(200)
         .json({
           status: true,
           message: `Hii, ${newUser.userName}, Welcome to LiteLearn. (Signed Up Successfully.)`,
+          user: reqUserData,
         });
     }
   } catch (error) {
