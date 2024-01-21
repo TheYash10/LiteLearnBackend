@@ -174,10 +174,11 @@ const resetPassword = async (req, res) => {
       process.env.ACCESS_SECRET_TOKEN,
       (error, decoded) => {
         if (error) {
-          return res.status(408).json({
+          res.status(408).json({
             status: false,
             message: "Request Timeout",
           });
+          return;
         }
 
         // req.user = decoded.user
