@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const uuid = require("uuid");
 const User = require("../models").User;
-const sendResetPasswordEmail = require('../middleware/nodeMailer')
+const sendResetPasswordEmail = require("../middleware/nodeMailer");
 
 const registerUser = async (req, res) => {
   const { userName, password, email } = req.body;
@@ -32,20 +32,20 @@ const registerUser = async (req, res) => {
 
         return res.status(200).json({
           status: true,
-          message: "User Registered",
+          message: `Hii, ${newUser.userName}, Welcome to LiteLearn. (Signed Up Successfully.)`,
           user: newUser,
         });
       } else {
         return res.status(409).json({
           status: false,
-          message: "Email is already in use",
+          message: "Email-Id is already in use.",
         });
       }
     } catch (error) {
       console.error(error);
       return res.status(500).json({
         status: false,
-        message: "Failed to register user",
+        message: "Something went wrong! sign-up failed.",
       });
     }
   }
@@ -72,11 +72,7 @@ const loginUser = async (req, res) => {
 
       const accessToken = jwt.sign(
         {
-          user: {
-            userName: user.userName,
-            email: user.email,
-            id: user.id,
-          },
+          id: user.id,
         },
         secretKey
       );
@@ -86,7 +82,7 @@ const loginUser = async (req, res) => {
         .status(200)
         .json({
           status: true,
-          message: "Authentication successful",
+          message: `Hii, ${user.userName}. Welcome Back !! (Signed In Successfully.)`,
           user: {
             userName: user.userName,
             email: user.email,
@@ -110,12 +106,11 @@ const loginUser = async (req, res) => {
 
 // Get Current User
 const currentUser = async (req, res) => {
-  res.json({ status: true, user: req.user });
+  res.json({ status: true, message: "Response OK" });
 };
 
 // Forgot Password
-const forgotPassword = async (req, res) => 
-{
+const forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({
@@ -123,109 +118,157 @@ const forgotPassword = async (req, res) =>
     });
 
     if (!user) {
-      return res.status(404).json({ status: false, message: "User with this email does not exists" })
+      return res.status(404).json({
+        status: false,
+        message: "User with this email does not exists",
+      });
     }
-  
-      const secretKey = process.env.ACCESS_SECRET_TOKEN;
-      const token = jwt.sign(
-        {
-          user: {
-            userName: user.userName,
-            email: user.email,
-            id: user.id,
-          },
-        },
-        secretKey,
-        {
-          expiresIn: "5m"
-        }
-      );
 
-      const data = sendResetPasswordEmail(user.id, token, user.email)
+    const secretKey = process.env.ACCESS_SECRET_TOKEN;
+    const token = jwt.sign(
+      {
+        id: user.id,
+      },
+      secretKey,
+      {
+        expiresIn: "5m",
+      }
+    );
 
-      data.then((response) => {
-        console.log(response)
-        if (response.rejected && response.rejected.length === 0)
-          res.status(200).json({
-            status: true,
-            message: "Check your email to reset the password"
-          })
-      }).catch((err) => {
-        res.status(500).json({
-          status: false,
-          message: "Internal Server Error"
-        })
-      })
+    const data = sendResetPasswordEmail(user.id, token, user.email);
+
+    data.then((response) => {
+      console.log(response);
+      if (response.rejected && response.rejected.length === 0)
+        res.status(200).json({
+          status: true,
+          message: "Check your email to reset the password",
+        });
+    });
   } catch (error) {
-
     console.log("Error ", error);
 
     return res.status(500).json({
       status: false,
       message: "Error during authentication",
     });
-
   }
-}
+};
 
-  // Reset Password
-  const resetPassword = async (req, res) => {
-    let userId;
+// Reset Password
+const resetPassword = async (req, res) => {
+  let userId;
 
-    const { resetToken, newPassword } = req.body;
-    try 
-    {
-      jwt.verify(resetToken, process.env.ACCESS_SECRET_TOKEN, (error, decoded) => {
+  const { resetToken, newPassword } = req.body;
+  try {
+    jwt.verify(
+      resetToken,
+      process.env.ACCESS_SECRET_TOKEN,
+      (error, decoded) => {
         if (error) {
-          return res.status(408).json({
+          res.status(408).json({
             status: false,
-            message: "Request Timeout"
-          })
+            message: "Request Timeout",
+          });
+          return;
         }
 
-        // req.user = decoded.user
+        userId = decoded.id;
+      }
+    );
 
-        userId = decoded.user.id
-      })
+    const user = await User.findOne({
+      where: {
+        id: userId,
+      },
+    });
 
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-      const user = await User.findOne({
-        where: {
-          id: userId
-        }
-      });
+    const response = await user.update({ password: hashedNewPassword });
 
-      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-
-      const response = await user.update({ password: hashedNewPassword })
-
-      if(response)
-      {
+    if (response) {
       return res.status(200).json({
         status: true,
-        message:"Your Password is updated Successfully"
-      })
-    }
-    else
-    {
+        message: "Your Password is updated Successfully",
+      });
+    } else {
       return res.status(500).json({
         status: true,
-        message:"Internal Server Error"
-      })
-    }
-    } catch (err) {
-      return res.status(500).json({
-        status: false,
-        message: "Error during authentication",
+        message: "Internal Server Error",
       });
     }
-
+  } catch (err) {
+    return res.status(500).json({
+      status: false,
+      message: "Error during authentication",
+    });
   }
+};
 
-  module.exports = {
-    registerUser,
-    loginUser,
-    currentUser,
-    forgotPassword,
-    resetPassword
+const signInWithGoogleCredentials = async (req, res) => {
+  const { userName, email } = req.body;
+
+  try {
+    const user = await User.findOne({
+      where: {
+        email: email,
+      },
+    });
+
+    if (user) {
+      //Already Existing User => Perform SignIn
+      const token = jwt.sign({ id: user.id }, process.env.ACCESS_SECRET_TOKEN);
+
+      const { password, createdAt, updatedAt, ...reqUserData } =
+        user.dataValues;
+
+      res
+        .cookie("access_token", token)
+        .status(200)
+        .json({
+          statue: true,
+          message: `Hii, ${user.userName}. Welcome Back !! (Signed In Successfully.)`,
+          user: reqUserData,
+        });
+    } else {
+      //New User => Perform SignUp
+      const newUser = await User.create({
+        id: uuid.v4(),
+        userName,
+        email,
+      });
+
+      const token = jwt.sign(
+        { id: newUser.id },
+        process.env.ACCESS_SECRET_TOKEN
+      );
+
+      const { password, createdAt, updatedAt, ...reqUserData } =
+        newUser.dataValues;
+
+      res
+        .cookie("access_token", token)
+        .status(200)
+        .json({
+          status: true,
+          message: `Hii, ${newUser.userName}, Welcome to LiteLearn. (Signed Up Successfully.)`,
+          user: reqUserData,
+        });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: "Some thing went wrong, while sign-in with google.",
+    });
   }
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  currentUser,
+  forgotPassword,
+  resetPassword,
+  signInWithGoogleCredentials,
+};
