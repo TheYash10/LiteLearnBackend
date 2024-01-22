@@ -135,7 +135,12 @@ const forgotPassword = async (req, res) => {
       }
     );
 
-    const data = sendResetPasswordEmail(user.id, token, user.email);
+    const data = sendResetPasswordEmail(
+      user.id,
+      user.userName,
+      token,
+      user.email
+    );
 
     data.then((response) => {
       console.log(response);
