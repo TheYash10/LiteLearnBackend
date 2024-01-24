@@ -16,9 +16,5 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 
-  // User.beforeCreate((user, _) => {
-  //   return (user.id = uuid.v4());
-  // });
-
   return User;
 };
