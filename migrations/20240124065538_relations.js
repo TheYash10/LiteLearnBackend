@@ -4,13 +4,14 @@ const Sequelize = require("sequelize");
  * Actions summary:
  *
  * createTable() => "Users", deps: []
+ * createTable() => "Posts", deps: [Users]
  *
  */
 
 const info = {
   revision: 1,
-  name: "user",
-  created: "2024-01-16T12:58:11.754Z",
+  name: "relations",
+  created: "2024-01-24T06:55:38.437Z",
   comment: "",
 };
 
@@ -43,9 +44,55 @@ const migrationCommands = (transaction) => [
       { transaction },
     ],
   },
+  {
+    fn: "createTable",
+    params: [
+      "Posts",
+      {
+        id: {
+          type: Sequelize.UUID,
+          field: "id",
+          primaryKey: true,
+          allowNull: false,
+        },
+        fileType: { type: Sequelize.STRING, field: "fileType" },
+        attachment: { type: Sequelize.STRING, field: "attachment" },
+        category: { type: Sequelize.STRING, field: "category" },
+        tag: { type: Sequelize.STRING, field: "tag" },
+        likes: {
+          type: Sequelize.JSON,
+          field: "likes",
+          defaultValue: Sequelize.Array,
+        },
+        createdAt: {
+          type: Sequelize.DATE,
+          field: "createdAt",
+          allowNull: false,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          field: "updatedAt",
+          allowNull: false,
+        },
+        createdBy: {
+          type: Sequelize.UUID,
+          field: "createdBy",
+          onUpdate: "CASCADE",
+          onDelete: "SET NULL",
+          references: { model: "Users", key: "id" },
+          allowNull: true,
+        },
+      },
+      { transaction },
+    ],
+  },
 ];
 
 const rollbackCommands = (transaction) => [
+  {
+    fn: "dropTable",
+    params: ["Posts", { transaction }],
+  },
   {
     fn: "dropTable",
     params: ["Users", { transaction }],

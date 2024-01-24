@@ -6,9 +6,8 @@
                 "id": {
                     "allowNull": false,
                     "primaryKey": true,
-                    "autoIncrement": true,
                     "field": "id",
-                    "seqType": "Sequelize.INTEGER"
+                    "seqType": "Sequelize.UUID"
                 },
                 "fileType": {
                     "field": "fileType",
@@ -26,12 +25,12 @@
                     "field": "tag",
                     "seqType": "Sequelize.STRING"
                 },
-                "upvote": {
+                "likes": {
                     "defaultValue": {
                         "internal": true,
                         "value": "Sequelize.Array"
                     },
-                    "field": "upvote",
+                    "field": "likes",
                     "seqType": "Sequelize.JSON"
                 },
                 "createdAt": {
@@ -53,7 +52,7 @@
                     "onDelete": "SET NULL",
                     "onUpdate": "CASCADE",
                     "field": "createdBy",
-                    "seqType": "Sequelize.INTEGER"
+                    "seqType": "Sequelize.UUID"
                 }
             },
             "indexes": []
@@ -64,9 +63,8 @@
                 "id": {
                     "allowNull": false,
                     "primaryKey": true,
-                    "autoIncrement": true,
                     "field": "id",
-                    "seqType": "Sequelize.INTEGER"
+                    "seqType": "Sequelize.UUID"
                 },
                 "userName": {
                     "field": "userName",
@@ -97,6 +95,6 @@
     },
     "path": "/home/yashjariwala/WEB/LiteLearn/Backend/migrations/_current.json",
     "backupPath": "/home/yashjariwala/WEB/LiteLearn/Backend/migrations/_current_bak.json",
-    "exists": true,
-    "revision": 2
+    "exists": false,
+    "revision": 1
 }

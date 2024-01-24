@@ -16,9 +16,12 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 
-  // User.beforeCreate((user, _) => {
-  //   return (user.id = uuid.v4());
-  // });
+  User.associate = models => {
+    User.hasMany(models.Post, {
+      foreignKey: 'createdBy',
+      as: 'PostModel'
+    });
+  };
 
   return User;
 };
