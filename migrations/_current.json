@@ -6,20 +6,15 @@
                 "id": {
                     "allowNull": false,
                     "primaryKey": true,
-                    "autoIncrement": true,
                     "field": "id",
-                    "seqType": "Sequelize.INTEGER"
+                    "seqType": "Sequelize.UUID"
                 },
-                "fileType": {
-                    "field": "fileType",
+                "filetype": {
+                    "field": "filetype",
                     "seqType": "Sequelize.STRING"
                 },
                 "attachment": {
                     "field": "attachment",
-                    "seqType": "Sequelize.STRING"
-                },
-                "category": {
-                    "field": "category",
                     "seqType": "Sequelize.STRING"
                 },
                 "tag": {
@@ -34,17 +29,26 @@
                     "field": "upvote",
                     "seqType": "Sequelize.JSON"
                 },
-                "createdAt": {
+                "domain": {
+                    "field": "domain",
+                    "seqType": "Sequelize.STRING"
+                },
+                "note": {
+                    "allowNull": true,
+                    "field": "note",
+                    "seqType": "Sequelize.STRING"
+                },
+                "createdat": {
                     "allowNull": false,
-                    "field": "createdAt",
+                    "field": "createdat",
                     "seqType": "Sequelize.DATE"
                 },
-                "updatedAt": {
+                "updatedat": {
                     "allowNull": false,
-                    "field": "updatedAt",
+                    "field": "updatedat",
                     "seqType": "Sequelize.DATE"
                 },
-                "createdBy": {
+                "createdby": {
                     "allowNull": true,
                     "references": {
                         "model": "Users",
@@ -52,8 +56,8 @@
                     },
                     "onDelete": "SET NULL",
                     "onUpdate": "CASCADE",
-                    "field": "createdBy",
-                    "seqType": "Sequelize.INTEGER"
+                    "field": "createdby",
+                    "seqType": "Sequelize.UUID"
                 }
             },
             "indexes": []
@@ -64,12 +68,11 @@
                 "id": {
                     "allowNull": false,
                     "primaryKey": true,
-                    "autoIncrement": true,
                     "field": "id",
-                    "seqType": "Sequelize.INTEGER"
+                    "seqType": "Sequelize.UUID"
                 },
-                "userName": {
-                    "field": "userName",
+                "username": {
+                    "field": "username",
                     "seqType": "Sequelize.STRING"
                 },
                 "email": {
@@ -77,18 +80,28 @@
                     "field": "email",
                     "seqType": "Sequelize.STRING"
                 },
+                "profile": {
+                    "allowNull": true,
+                    "field": "profile",
+                    "seqType": "Sequelize.STRING"
+                },
                 "password": {
+                    "allowNull": true,
                     "field": "password",
                     "seqType": "Sequelize.STRING"
                 },
-                "createdAt": {
+                "domain": {
+                    "field": "domain",
+                    "seqType": "Sequelize.STRING"
+                },
+                "createdat": {
                     "allowNull": false,
-                    "field": "createdAt",
+                    "field": "createdat",
                     "seqType": "Sequelize.DATE"
                 },
-                "updatedAt": {
+                "updatedat": {
                     "allowNull": false,
-                    "field": "updatedAt",
+                    "field": "updatedat",
                     "seqType": "Sequelize.DATE"
                 }
             },
@@ -97,6 +110,6 @@
     },
     "path": "/home/yashjariwala/WEB/LiteLearn/Backend/migrations/_current.json",
     "backupPath": "/home/yashjariwala/WEB/LiteLearn/Backend/migrations/_current_bak.json",
-    "exists": true,
-    "revision": 2
+    "exists": false,
+    "revision": 1
 }
