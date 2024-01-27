@@ -2,7 +2,8 @@
 // import appRoutes from './router.js'
 
 const Express = require("express");
-const appRoutes = require("./Routes/authRoutes.js");
+const authRoutes = require("./Routes/authRoutes.js");
+const postRoutes = require("./Routes/postRoutes.js")
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv").config();
 const cookieParser = require("cookie-parser");
@@ -16,7 +17,8 @@ app.use(cors());
 app.use(Express.json());
 app.use(cookieParser());
 
-app.use("/", appRoutes);
+app.use("/", authRoutes);
+app.use("/post",postRoutes)
 
 app.listen(port, () => {
   console.log(`Server is now running on port no ${port}`);
