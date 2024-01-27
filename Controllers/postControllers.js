@@ -102,8 +102,18 @@ const updatePost = async (req, res) => {
 }
 
 const allPosts = async (req, res) => {
+    const page = req.query.page || 1; // Page number, default to 1
+    const pageSize = 10; // Number of posts per page
+
     try {
-        const posts = await Post.findAll();
+        const offset = (page - 1) * pageSize;
+        const posts = await Post.findAll(
+            {
+                limit: pageSize,
+                offset: offset,
+                order: [['createdat', 'DESC']]
+            }
+        );
 
         if (posts) {
             res.status(200).json({
@@ -128,11 +138,18 @@ const allPosts = async (req, res) => {
 }
 
 const userPosts = async (req, res) => {
+    const page = req.query.page || 1; // Page number, default to 1
+    const pageSize = 10; // Number of posts per page
     try {
+        const offset = (page - 1) * pageSize;
         const posts = await Post.findAll({
+            limit: pageSize,
+            offset: offset,
+            order: [['createdat', 'DESC']],
             where: {
                 createdby: req.params.id
             }
+
         })
 
         if (posts) {
