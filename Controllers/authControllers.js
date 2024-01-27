@@ -5,9 +5,9 @@ const User = require("../models").User;
 const sendResetPasswordEmail = require("../middleware/nodeMailer");
 
 const registerUser = async (req, res) => {
-  const { userName, password, email } = req.body;
+  const { username, password, email } = req.body;
 
-  if (!userName || !password || !email) {
+  if (!username || !password || !email) {
     return res.status(400).json({
       status: false,
       message: "All Fields are Mandatory!",
@@ -25,14 +25,14 @@ const registerUser = async (req, res) => {
 
         const newUser = await User.create({
           id: uuid.v4(),
-          userName,
+          username,
           password: hashedPassword,
           email,
         });
 
         return res.status(200).json({
           status: true,
-          message: `Hii, ${newUser.userName}, Welcome to LiteLearn. (Signed Up Successfully.)`,
+          message: `Hii, ${newUser.username}, Welcome to LiteLearn. (Signed Up Successfully.)`,
           user: newUser,
         });
       } else {
@@ -82,9 +82,9 @@ const loginUser = async (req, res) => {
         .status(200)
         .json({
           status: true,
-          message: `Hii, ${user.userName}. Welcome Back !! (Signed In Successfully.)`,
+          message: `Hii, ${user.username}. Welcome Back !! (Signed In Successfully.)`,
           user: {
-            userName: user.userName,
+            username: user.username,
             email: user.email,
             id: user.id,
           },
@@ -137,7 +137,7 @@ const forgotPassword = async (req, res) => {
 
     const data = sendResetPasswordEmail(
       user.id,
-      user.userName,
+      user.username,
       token,
       user.email
     );
@@ -212,7 +212,7 @@ const resetPassword = async (req, res) => {
 };
 
 const signInWithGoogleCredentials = async (req, res) => {
-  const { userName, email } = req.body;
+  const { username, email } = req.body;
 
   try {
     const user = await User.findOne({
@@ -233,14 +233,14 @@ const signInWithGoogleCredentials = async (req, res) => {
         .status(200)
         .json({
           statue: true,
-          message: `Hii, ${user.userName}. Welcome Back !! (Signed In Successfully.)`,
+          message: `Hii, ${user.username}. Welcome Back !! (Signed In Successfully.)`,
           user: reqUserData,
         });
     } else {
       //New User => Perform SignUp
       const newUser = await User.create({
         id: uuid.v4(),
-        userName,
+        username,
         email,
       });
 
@@ -257,7 +257,7 @@ const signInWithGoogleCredentials = async (req, res) => {
         .status(200)
         .json({
           status: true,
-          message: `Hii, ${newUser.userName}, Welcome to LiteLearn. (Signed Up Successfully.)`,
+          message: `Hii, ${newUser.username}, Welcome to LiteLearn. (Signed Up Successfully.)`,
           user: reqUserData,
         });
     }
