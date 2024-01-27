@@ -53,8 +53,6 @@ const createPost = async (req, res) => {
 
 
 const updatePost = async (req, res) => {
-
-
     try {
 
         const postData = Post.findOne({
@@ -103,5 +101,104 @@ const updatePost = async (req, res) => {
     }
 }
 
+const allPosts = async (req, res) => {
+    try {
+        const posts = await Post.findAll();
 
-module.exports = { createPost, updatePost }
+        if (posts) {
+            res.status(200).json({
+                status: true,
+                message: "List of All Posts",
+                Posts: posts
+            })
+        }
+        else {
+            res.status(404).json({
+                status: false,
+                message: "Post not found"
+            })
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: error.message
+        })
+    }
+}
+
+const userPosts = async (req, res) => {
+    try {
+        const posts = await Post.findAll({
+            where: {
+                createdby: req.params.id
+            }
+        })
+
+        if (posts) {
+            res.status(200).json({
+                status: true,
+                message: "List of All Posts",
+                Posts: posts
+            })
+        }
+        else {
+            res.status(404).json({
+                status: false,
+                message: "Post not found"
+            })
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: error.message
+        })
+    }
+}
+
+const deletePost = async (req, res) => {
+    try {
+
+        const postData = Post.findOne({
+            where: {
+                id: req.params.id
+            }
+        });
+
+        if (postData) {
+            const deletedPost = Post.destroy({
+                where: {
+                    id: req.params.id
+                }
+            });
+
+            if (deletedPost) {
+                res.status(200).json({
+                    status: true,
+                    message: "Post Deleted Successfully"
+                })
+            }
+            else {
+                res.status(500).json({
+                    status: false,
+                    message: "Failed to update Post"
+                })
+            }
+        }
+        else {
+            res.status(404).json({
+                status: false,
+                message: "Post not found"
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: error.message
+        })
+    }
+}
+
+
+module.exports = { createPost, updatePost, deletePost, allPosts, userPosts }
