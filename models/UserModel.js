@@ -4,21 +4,29 @@ const { Sequelize } = require(".");
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define("User", {
-    userName: {
+    username: {
       type: DataTypes.STRING,
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    profile: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     password: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    domain: {
       type: DataTypes.STRING,
     },
   });
 
   User.associate = (models) => {
     User.hasMany(models.Post, {
-      foreignKey: "createdBy",
+      foreignKey: "createdby",
       as: "PostModel",
     });
   };
