@@ -169,17 +169,33 @@ const userPosts = async (req, res) => {
     if (posts.length !== 0) {
       const postsWithUpvotes = await Promise.all(
         posts.map(async (post) => {
-          const ListOfUpvote = await UpvoteModel.findAll({
+          const ListOfUpvotes = await UpvoteModel.findAll({
             where: {
               postid: post.id,
             },
           });
+          const data = await User.findOne({
+            where: {
+              id: post.createdby,
+            },
+          });
+
+          const userDetails = {
+            username: data.username,
+            id: data.id,
+            profile: data.profile,
+          };
+          var listOfUserIdUpvote = ListOfUpvotes.map((item) => {
+            return item["UserId"];
+          });
           return {
             ...post.toJSON(),
-            ListOfUpvote,
+            listOfUserIdUpvote,
+            userDetails,
           };
         })
       );
+
       res.status(200).json({
         status: true,
         message: "List of All Posts",
