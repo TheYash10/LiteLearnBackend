@@ -1,20 +1,19 @@
-const uuid = require("uuid");
 const { Post } = require("../models");
 
 const User = require("../models").User;
 
+const { UpvoteModel } = require("../models");
+
 // Create New Post
 
 const createPost = async (req, res) => {
-  const { filetype, attachment, tag, upvote, domain, note } = req.body;
+  const { filetype, attachment, tag, domain, note } = req.body;
 
   try {
     const newPost = await Post.create({
-      id: uuid.v4(),
       filetype,
       attachment,
       tag,
-      upvote,
       domain,
       note,
       createdby: req.userId,
@@ -34,6 +33,7 @@ const createPost = async (req, res) => {
         email: user.email,
         profile: user.profile,
       },
+      upvote: [],
     });
   } catch (error) {
     res.status(500).json({
@@ -103,12 +103,40 @@ const allPosts = async (req, res) => {
       offset: offset,
       order: [["createdat", "DESC"]],
     });
+    if (posts.length !== 0) {
+      const postsWithUpvotes = await Promise.all(
+        posts.map(async (post) => {
+          const ListOfUpvotes = await UpvoteModel.findAll({
+            where: {
+              postid: post.id,
+            },
+          });
+          const data = await User.findOne({
+            where: {
+              id: post.createdby,
+            },
+          });
 
-    if (posts) {
+          const userDetails = {
+            username: data.username,
+            id: data.id,
+            profile: data.profile,
+          };
+          var listOfUserIdUpvote = ListOfUpvotes.map((item) => {
+            return item["UserId"];
+          });
+          return {
+            ...post.toJSON(),
+            listOfUserIdUpvote,
+            userDetails,
+          };
+        })
+      );
+
       res.status(200).json({
         status: true,
         message: "List of All Posts",
-        Posts: posts,
+        Posts: postsWithUpvotes,
       });
     } else {
       res.status(404).json({
@@ -138,11 +166,24 @@ const userPosts = async (req, res) => {
       },
     });
 
-    if (posts) {
+    if (posts.length !== 0) {
+      const postsWithUpvotes = await Promise.all(
+        posts.map(async (post) => {
+          const ListOfUpvote = await UpvoteModel.findAll({
+            where: {
+              postid: post.id,
+            },
+          });
+          return {
+            ...post.toJSON(),
+            ListOfUpvote,
+          };
+        })
+      );
       res.status(200).json({
         status: true,
         message: "List of All Posts",
-        Posts: posts,
+        Posts: postsWithUpvotes,
       });
     } else {
       res.status(404).json({
@@ -160,14 +201,14 @@ const userPosts = async (req, res) => {
 
 const deletePost = async (req, res) => {
   try {
-    const postData = Post.findOne({
+    const postData = await Post.findOne({
       where: {
         id: req.params.id,
       },
     });
 
     if (postData) {
-      const deletedPost = Post.destroy({
+      const deletedPost = await Post.destroy({
         where: {
           id: req.params.id,
         },

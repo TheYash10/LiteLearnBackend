@@ -3,7 +3,8 @@
 
 const Express = require("express");
 const authRoutes = require("./Routes/authRoutes.js");
-const postRoutes = require("./Routes/postRoutes.js")
+const postRoutes = require("./Routes/postRoutes.js");
+const upvoteRoutes = require("./Routes/upvoteRoutes.js")
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv").config();
 const cookieParser = require("cookie-parser");
@@ -18,7 +19,7 @@ app.use(Express.json());
 app.use(cookieParser());
 
 app.use("/", authRoutes);
-app.use("/post",postRoutes)
+app.use("/post", postRoutes, upvoteRoutes)
 
 app.listen(port, () => {
   console.log(`Server is now running on port no ${port}`);
