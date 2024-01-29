@@ -4,6 +4,12 @@ const { Sequelize } = require(".");
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define("User", {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+      allowNull: false
+    },
     username: {
       type: DataTypes.STRING,
     },
@@ -11,15 +17,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    profile:{
-      type:DataTypes.STRING,
-      allowNull:true
+    profile: {
+      type: DataTypes.STRING,
+      allowNull: true
     },
     password: {
       type: DataTypes.STRING,
-      allowNull:true
+      allowNull: true
     },
-    domain:{
+    domain: {
       type: DataTypes.STRING
     }
   });
@@ -29,6 +35,11 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'createdby',
       as: 'PostModel'
     });
+
+
+    User.belongsToMany(models.Post, {
+      through: "UpvoteModel"
+    })
   };
 
   return User;

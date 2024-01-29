@@ -1,7 +1,8 @@
-const uuid = require('uuid');
 const { Post } = require('../models');
 
-const User = require('../models').User
+const User = require('../models').User;
+
+const { UpvoteModel } = require("../models");
 
 // Create New Post 
 
@@ -16,7 +17,6 @@ const createPost = async (req, res) => {
 
     try {
         const newPost = await Post.create({
-            id: uuid.v4(),
             filetype,
             attachment,
             tag,
@@ -38,7 +38,8 @@ const createPost = async (req, res) => {
                 id: user.id,
                 email: user.email,
                 profile: user.profile
-            }
+            },
+            upvote: []
         })
 
     } catch (error) {
@@ -53,14 +54,14 @@ const createPost = async (req, res) => {
 const updatePost = async (req, res) => {
     try {
 
-        const postData = Post.findOne({
+        const postData = await Post.findOne({
             where: {
                 id: req.params.id
             }
         });
 
         if (postData) {
-            const updatedPost = Post.update({
+            const updatedPost = await Post.update({
                 filetype: req.body.filetype,
                 attachment: req.body.attachment,
                 tag: req.body.tag,
@@ -112,12 +113,42 @@ const allPosts = async (req, res) => {
                 order: [['createdat', 'DESC']]
             }
         );
+        if (posts.length !== 0) {
+            const postsWithUpvotes = await Promise.all(
+                posts.map(async (post) => {
+                    const ListOfUpvotes = await UpvoteModel.findAll({
+                        where: {
+                            postid: post.id
+                        }
+                    });
+                    const data = await User.findOne({
+                        where: {
+                            id: post.createdby
+                        }
+                    })
 
-        if (posts) {
+                    const userDetails = {
+                        username: data.username,
+                        id: data.id,
+                        profile: data.profile
+                    }
+                    var listOfUserIdUpvote = ListOfUpvotes.map((item) => {
+                        return item['UserId']
+                    })
+                    return {
+                        ...post.toJSON(),
+                        listOfUserIdUpvote,
+                        userDetails
+                    };
+                })
+            );
+
+
+
             res.status(200).json({
                 status: true,
                 message: "List of All Posts",
-                Posts: posts
+                Posts: postsWithUpvotes,
             })
         }
         else {
@@ -150,11 +181,24 @@ const userPosts = async (req, res) => {
 
         })
 
-        if (posts) {
+        if (posts.length !== 0) {
+            const postsWithUpvotes = await Promise.all(
+                posts.map(async (post) => {
+                    const ListOfUpvote = await UpvoteModel.findAll({
+                        where: {
+                            postid: post.id
+                        }
+                    });
+                    return {
+                        ...post.toJSON(),
+                        ListOfUpvote
+                    };
+                })
+            );
             res.status(200).json({
                 status: true,
                 message: "List of All Posts",
-                Posts: posts
+                Posts: postsWithUpvotes
             })
         }
         else {
@@ -175,14 +219,14 @@ const userPosts = async (req, res) => {
 const deletePost = async (req, res) => {
     try {
 
-        const postData = Post.findOne({
+        const postData = await Post.findOne({
             where: {
                 id: req.params.id
             }
         });
 
         if (postData) {
-            const deletedPost = Post.destroy({
+            const deletedPost = await Post.destroy({
                 where: {
                     id: req.params.id
                 }

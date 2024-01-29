@@ -5,9 +5,9 @@ const User = require("../models").User;
 const sendResetPasswordEmail = require("../middleware/nodeMailer");
 
 const registerUser = async (req, res) => {
-  const { username, password, email } = req.body;
+  const { username, password, email, domain } = req.body;
 
-  if (!username || !password || !email) {
+  if (!username || !password || !email || !domain) {
     return res.status(400).json({
       status: false,
       message: "All Fields are Mandatory!",
@@ -24,10 +24,10 @@ const registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await User.create({
-          id: uuid.v4(),
           username,
           password: hashedPassword,
           email,
+          domain
         });
 
         return res.status(200).json({

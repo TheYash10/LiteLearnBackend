@@ -58,54 +58,6 @@
             },
             "indexes": []
         },
-        "UpvoteModels": {
-            "tableName": "UpvoteModels",
-            "schema": {
-                "id": {
-                    "defaultValue": {
-                        "internal": true,
-                        "value": "Sequelize.UUIDV4"
-                    },
-                    "primaryKey": true,
-                    "allowNull": false,
-                    "field": "id",
-                    "seqType": "Sequelize.UUID"
-                },
-                "createdAt": {
-                    "allowNull": false,
-                    "field": "createdAt",
-                    "seqType": "Sequelize.DATE"
-                },
-                "updatedAt": {
-                    "allowNull": false,
-                    "field": "updatedAt",
-                    "seqType": "Sequelize.DATE"
-                },
-                "PostId": {
-                    "unique": "UpvoteModels_UserId_PostId_unique",
-                    "references": {
-                        "model": "Posts",
-                        "key": "id"
-                    },
-                    "onDelete": "CASCADE",
-                    "onUpdate": "CASCADE",
-                    "field": "PostId",
-                    "seqType": "Sequelize.UUID"
-                },
-                "UserId": {
-                    "unique": "UpvoteModels_UserId_PostId_unique",
-                    "references": {
-                        "model": "Users",
-                        "key": "id"
-                    },
-                    "onDelete": "CASCADE",
-                    "onUpdate": "CASCADE",
-                    "field": "UserId",
-                    "seqType": "Sequelize.UUID"
-                }
-            },
-            "indexes": []
-        },
         "Users": {
             "tableName": "Users",
             "schema": {
@@ -154,10 +106,48 @@
                 }
             },
             "indexes": []
+        },
+        "UpvoteModel": {
+            "tableName": "UpvoteModel",
+            "schema": {
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "PostId": {
+                    "primaryKey": true,
+                    "references": {
+                        "model": "Posts",
+                        "key": "id"
+                    },
+                    "onDelete": "CASCADE",
+                    "onUpdate": "CASCADE",
+                    "field": "PostId",
+                    "seqType": "Sequelize.UUID"
+                },
+                "UserId": {
+                    "primaryKey": true,
+                    "references": {
+                        "model": "Users",
+                        "key": "id"
+                    },
+                    "onDelete": "CASCADE",
+                    "onUpdate": "CASCADE",
+                    "field": "UserId",
+                    "seqType": "Sequelize.UUID"
+                }
+            },
+            "indexes": []
         }
     },
     "path": "/home/yashjariwala/WEB/LiteLearn/Backend/migrations/_current.json",
     "backupPath": "/home/yashjariwala/WEB/LiteLearn/Backend/migrations/_current_bak.json",
     "exists": true,
-    "revision": 3
+    "revision": 2
 }

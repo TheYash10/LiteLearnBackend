@@ -3,91 +3,60 @@ const Sequelize = require("sequelize");
 /**
  * Actions summary:
  *
- * createTable() => "Users", deps: []
- * createTable() => "Posts", deps: [Users]
+ * dropTable() => "UpvoteModel", deps: []
+ * createTable() => "UpvoteModels", deps: [Posts, Users]
  *
  */
 
 const info = {
-  revision: 1,
+  revision: 3,
   name: "relations",
-  created: "2024-01-27T11:04:15.564Z",
+  created: "2024-01-29T06:15:34.637Z",
   comment: "",
 };
 
 const migrationCommands = (transaction) => [
   {
-    fn: "createTable",
-    params: [
-      "Users",
-      {
-        id: {
-          type: Sequelize.UUID,
-          field: "id",
-          primaryKey: true,
-          allowNull: false,
-        },
-        username: { type: Sequelize.STRING, field: "username" },
-        email: { type: Sequelize.STRING, field: "email", allowNull: false },
-        profile: { type: Sequelize.STRING, field: "profile", allowNull: true },
-        password: {
-          type: Sequelize.STRING,
-          field: "password",
-          allowNull: true,
-        },
-        domain: { type: Sequelize.STRING, field: "domain" },
-        createdat: {
-          type: Sequelize.DATE,
-          field: "createdat",
-          allowNull: false,
-        },
-        updatedat: {
-          type: Sequelize.DATE,
-          field: "updatedat",
-          allowNull: false,
-        },
-      },
-      { transaction },
-    ],
+    fn: "dropTable",
+    params: ["UpvoteModel", { transaction }],
   },
   {
     fn: "createTable",
     params: [
-      "Posts",
+      "UpvoteModels",
       {
         id: {
           type: Sequelize.UUID,
           field: "id",
+          allowNull: false,
           primaryKey: true,
-          allowNull: false,
+          defaultValue: Sequelize.UUIDV4,
         },
-        filetype: { type: Sequelize.STRING, field: "filetype" },
-        attachment: { type: Sequelize.STRING, field: "attachment" },
-        tag: { type: Sequelize.STRING, field: "tag" },
-        upvote: {
-          type: Sequelize.JSON,
-          field: "upvote",
-          defaultValue: Sequelize.Array,
-        },
-        domain: { type: Sequelize.STRING, field: "domain" },
-        note: { type: Sequelize.STRING, field: "note", allowNull: true },
-        createdat: {
+        createdAt: {
           type: Sequelize.DATE,
-          field: "createdat",
+          field: "createdAt",
           allowNull: false,
         },
-        updatedat: {
+        updatedAt: {
           type: Sequelize.DATE,
-          field: "updatedat",
+          field: "updatedAt",
           allowNull: false,
         },
-        createdby: {
+        PostId: {
           type: Sequelize.UUID,
-          field: "createdby",
+          field: "PostId",
           onUpdate: "CASCADE",
-          onDelete: "SET NULL",
+          onDelete: "CASCADE",
+          references: { model: "Posts", key: "id" },
+          unique: "UpvoteModels_UserId_PostId_unique",
+        },
+        UserId: {
+          type: Sequelize.UUID,
+          field: "UserId",
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
           references: { model: "Users", key: "id" },
-          allowNull: true,
+          unique: "UpvoteModels_UserId_PostId_unique",
         },
       },
       { transaction },
@@ -98,11 +67,42 @@ const migrationCommands = (transaction) => [
 const rollbackCommands = (transaction) => [
   {
     fn: "dropTable",
-    params: ["Posts", { transaction }],
+    params: ["UpvoteModels", { transaction }],
   },
   {
-    fn: "dropTable",
-    params: ["Users", { transaction }],
+    fn: "createTable",
+    params: [
+      "UpvoteModel",
+      {
+        createdAt: {
+          type: Sequelize.DATE,
+          field: "createdAt",
+          allowNull: false,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          field: "updatedAt",
+          allowNull: false,
+        },
+        PostId: {
+          type: Sequelize.UUID,
+          field: "PostId",
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
+          references: { model: "Posts", key: "id" },
+          primaryKey: true,
+        },
+        UserId: {
+          type: Sequelize.UUID,
+          field: "UserId",
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
+          references: { model: "Users", key: "id" },
+          primaryKey: true,
+        },
+      },
+      { transaction },
+    ],
   },
 ];
 

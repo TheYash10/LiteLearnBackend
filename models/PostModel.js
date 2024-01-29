@@ -2,6 +2,12 @@
 
 module.exports = (sequelize, DataTypes) => {
     const Post = sequelize.define("Post", {
+        id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true,
+            allowNull: false
+        },
         filetype: {
             type: DataTypes.STRING,
         },
@@ -10,10 +16,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         tag: {
             type: DataTypes.STRING
-        },
-        upvote: {
-            type: DataTypes.JSON,
-            defaultValue: [],
         },
         domain: {
             type: DataTypes.STRING
@@ -28,6 +30,11 @@ module.exports = (sequelize, DataTypes) => {
         Post.belongsTo(models.User, {
             foreignKey: 'createdby',
             as: 'UserModel'
+        })
+
+
+        Post.belongsToMany(models.User, {
+            through: "UpvoteModel"
         })
 
     }
