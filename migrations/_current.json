@@ -1,115 +1,115 @@
 {
-    "tables": {
-        "Posts": {
-            "tableName": "Posts",
-            "schema": {
-                "id": {
-                    "allowNull": false,
-                    "primaryKey": true,
-                    "field": "id",
-                    "seqType": "Sequelize.UUID"
-                },
-                "filetype": {
-                    "field": "filetype",
-                    "seqType": "Sequelize.STRING"
-                },
-                "attachment": {
-                    "field": "attachment",
-                    "seqType": "Sequelize.STRING"
-                },
-                "tag": {
-                    "field": "tag",
-                    "seqType": "Sequelize.STRING"
-                },
-                "upvote": {
-                    "defaultValue": {
-                        "internal": true,
-                        "value": "Sequelize.Array"
-                    },
-                    "field": "upvote",
-                    "seqType": "Sequelize.JSON"
-                },
-                "domain": {
-                    "field": "domain",
-                    "seqType": "Sequelize.STRING"
-                },
-                "note": {
-                    "allowNull": true,
-                    "field": "note",
-                    "seqType": "Sequelize.STRING"
-                },
-                "createdat": {
-                    "allowNull": false,
-                    "field": "createdat",
-                    "seqType": "Sequelize.DATE"
-                },
-                "updatedat": {
-                    "allowNull": false,
-                    "field": "updatedat",
-                    "seqType": "Sequelize.DATE"
-                },
-                "createdby": {
-                    "allowNull": true,
-                    "references": {
-                        "model": "Users",
-                        "key": "id"
-                    },
-                    "onDelete": "SET NULL",
-                    "onUpdate": "CASCADE",
-                    "field": "createdby",
-                    "seqType": "Sequelize.UUID"
-                }
-            },
-            "indexes": []
+  "tables": {
+    "Posts": {
+      "tableName": "Posts",
+      "schema": {
+        "id": {
+          "allowNull": false,
+          "primaryKey": true,
+          "field": "id",
+          "seqType": "Sequelize.UUID"
         },
-        "Users": {
-            "tableName": "Users",
-            "schema": {
-                "id": {
-                    "allowNull": false,
-                    "primaryKey": true,
-                    "field": "id",
-                    "seqType": "Sequelize.UUID"
-                },
-                "username": {
-                    "field": "username",
-                    "seqType": "Sequelize.STRING"
-                },
-                "email": {
-                    "allowNull": false,
-                    "field": "email",
-                    "seqType": "Sequelize.STRING"
-                },
-                "profile": {
-                    "allowNull": true,
-                    "field": "profile",
-                    "seqType": "Sequelize.STRING"
-                },
-                "password": {
-                    "allowNull": true,
-                    "field": "password",
-                    "seqType": "Sequelize.STRING"
-                },
-                "domain": {
-                    "field": "domain",
-                    "seqType": "Sequelize.STRING"
-                },
-                "createdat": {
-                    "allowNull": false,
-                    "field": "createdat",
-                    "seqType": "Sequelize.DATE"
-                },
-                "updatedat": {
-                    "allowNull": false,
-                    "field": "updatedat",
-                    "seqType": "Sequelize.DATE"
-                }
-            },
-            "indexes": []
+        "filetype": {
+          "field": "filetype",
+          "seqType": "Sequelize.STRING"
+        },
+        "attachment": {
+          "field": "attachment",
+          "seqType": "Sequelize.STRING"
+        },
+        "tag": {
+          "field": "tag",
+          "seqType": "Sequelize.STRING"
+        },
+        "upvote": {
+          "defaultValue": {
+            "internal": true,
+            "value": "Sequelize.Array"
+          },
+          "field": "upvote",
+          "seqType": "Sequelize.JSON"
+        },
+        "domain": {
+          "field": "domain",
+          "seqType": "Sequelize.STRING"
+        },
+        "note": {
+          "allowNull": true,
+          "field": "note",
+          "seqType": "Sequelize.STRING"
+        },
+        "createdat": {
+          "allowNull": false,
+          "field": "createdat",
+          "seqType": "Sequelize.DATE"
+        },
+        "updatedat": {
+          "allowNull": false,
+          "field": "updatedat",
+          "seqType": "Sequelize.DATE"
+        },
+        "createdby": {
+          "allowNull": true,
+          "references": {
+            "model": "Users",
+            "key": "id"
+          },
+          "onDelete": "SET NULL",
+          "onUpdate": "CASCADE",
+          "field": "createdby",
+          "seqType": "Sequelize.INTEGER"
         }
+      },
+      "indexes": []
     },
-    "path": "/home/yashjariwala/WEB/LiteLearn/Backend/migrations/_current.json",
-    "backupPath": "/home/yashjariwala/WEB/LiteLearn/Backend/migrations/_current_bak.json",
-    "exists": false,
-    "revision": 1
+    "Users": {
+      "tableName": "Users",
+      "schema": {
+        "id": {
+          "allowNull": false,
+          "primaryKey": true,
+          "field": "id",
+          "seqType": "Sequelize.UUID"
+        },
+        "username": {
+          "field": "username",
+          "seqType": "Sequelize.STRING"
+        },
+        "email": {
+          "allowNull": false,
+          "field": "email",
+          "seqType": "Sequelize.STRING"
+        },
+        "profile": {
+          "allowNull": true,
+          "field": "profile",
+          "seqType": "Sequelize.STRING"
+        },
+        "password": {
+          "allowNull": true,
+          "field": "password",
+          "seqType": "Sequelize.STRING"
+        },
+        "domain": {
+          "field": "domain",
+          "seqType": "Sequelize.STRING"
+        },
+        "createdat": {
+          "allowNull": false,
+          "field": "createdat",
+          "seqType": "Sequelize.DATE"
+        },
+        "updatedat": {
+          "allowNull": false,
+          "field": "updatedat",
+          "seqType": "Sequelize.DATE"
+        }
+      },
+      "indexes": []
+    }
+  },
+  "path": "/home/yashjariwala/WEB/LiteLearn/Backend/migrations/_current.json",
+  "backupPath": "/home/yashjariwala/WEB/LiteLearn/Backend/migrations/_current_bak.json",
+  "exists": false,
+  "revision": 1
 }

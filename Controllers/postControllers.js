@@ -1,5 +1,5 @@
 const uuid = require('uuid');
-const { Post } = require('../models')
+const { Post } = require('../models');
 
 const User = require('../models').User
 
@@ -10,7 +10,6 @@ const createPost = async (req, res) => {
         filetype,
         attachment,
         tag,
-        upvote,
         domain,
         note
     } = req.body;
@@ -21,7 +20,6 @@ const createPost = async (req, res) => {
             filetype,
             attachment,
             tag,
-            upvote,
             domain,
             note,
             createdby: req.userId
@@ -216,6 +214,9 @@ const deletePost = async (req, res) => {
         })
     }
 }
+
+
+
 
 
 module.exports = { createPost, updatePost, deletePost, allPosts, userPosts }

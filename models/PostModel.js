@@ -1,26 +1,26 @@
 "use strict";
 
-module.exports = (sequelize,DataTypes) =>{
+module.exports = (sequelize, DataTypes) => {
     const Post = sequelize.define("Post", {
-        filetype:{
+        filetype: {
             type: DataTypes.STRING,
         },
-        attachment:{
-            type: DataTypes.STRING,   
+        attachment: {
+            type: DataTypes.STRING,
         },
-        tag:{
+        tag: {
             type: DataTypes.STRING
         },
         upvote: {
             type: DataTypes.JSON,
-            defaultValue: [], 
+            defaultValue: [],
         },
-        domain:{
+        domain: {
             type: DataTypes.STRING
         },
-        note:{
+        note: {
             type: DataTypes.STRING,
-            allowNull : true
+            allowNull: true
         }
     });
 
@@ -29,7 +29,7 @@ module.exports = (sequelize,DataTypes) =>{
             foreignKey: 'createdby',
             as: 'UserModel'
         })
-        
+
     }
 
     return Post;
