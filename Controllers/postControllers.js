@@ -7,10 +7,11 @@ const { UpvoteModel } = require("../models");
 // Create New Post
 
 const createPost = async (req, res) => {
-  const { filetype, attachment, tag, domain, note } = req.body;
+  const { filetype, attachment, tag, domain, note, id } = req.body;
 
   try {
     const newPost = await Post.create({
+      id,
       filetype,
       attachment,
       tag,
