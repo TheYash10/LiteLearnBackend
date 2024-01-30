@@ -61,28 +61,37 @@ const updatePost = async (req, res) => {
         });
 
         if (postData) {
-            const updatedPost = await Post.update({
-                filetype: req.body.filetype,
-                attachment: req.body.attachment,
-                tag: req.body.tag,
-                domain: req.body.domain,
-                note: req.body.note
-            }, {
-                where: {
-                    id: req.params.id
-                }
-            });
 
-            if (updatedPost) {
-                res.status(200).json({
-                    status: true,
-                    message: "Post Updated Successfully"
-                })
+            if (req.userId === postData.createdby) {
+                const updatedPost = await Post.update({
+                    filetype: req.body.filetype,
+                    attachment: req.body.attachment,
+                    tag: req.body.tag,
+                    domain: req.body.domain,
+                    note: req.body.note
+                }, {
+                    where: {
+                        id: req.params.id
+                    }
+                });
+
+                if (updatedPost) {
+                    res.status(200).json({
+                        status: true,
+                        message: "Post Updated Successfully"
+                    })
+                }
+                else {
+                    res.status(500).json({
+                        status: false,
+                        message: "Failed to update Post"
+                    })
+                }
             }
             else {
-                res.status(500).json({
+                res.status(401).json({
                     status: false,
-                    message: "Failed to update Post"
+                    message: "User is not Authorized"
                 })
             }
         }
@@ -210,9 +219,6 @@ const userPosts = async (req, res) => {
                     };
                 })
             );
-
-
-
             res.status(200).json({
                 status: true,
                 message: "List of All Posts",
@@ -243,31 +249,101 @@ const deletePost = async (req, res) => {
             }
         });
 
-        if (postData) {
-            const deletedPost = await Post.destroy({
-                where: {
-                    id: req.params.id
-                }
-            });
+        if (req.userId === postData.createdby) {
+            if (postData) {
+                const deletedPost = await Post.destroy({
+                    where: {
+                        id: req.params.id
+                    }
+                });
 
-            if (deletedPost) {
+                if (deletedPost) {
+                    res.status(200).json({
+                        status: true,
+                        message: "Post Deleted Successfully"
+                    })
+                }
+                else {
+                    res.status(500).json({
+                        status: false,
+                        message: "Failed to update Post"
+                    })
+                }
+            }
+            else {
+                res.status(404).json({
+                    status: false,
+                    message: "Post not found"
+                })
+            }
+        } else {
+            res.status(401).json({
+                status: false,
+                message: "User is not authorized"
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: error.message
+        })
+    }
+}
+
+const upvotePost = async (req, res) => {
+
+    const postId = req.params.id;
+
+    try {
+
+        const findId = await UpvoteModel.findOne({
+            where: {
+                UserId: req.userId,
+                PostId: postId
+            }
+        })
+
+        if (findId) {
+            const response = await UpvoteModel.destroy({
+                where: {
+                    UserId: req.userId,
+                    PostId: postId
+                }
+            })
+
+
+            if (response) {
                 res.status(200).json({
                     status: true,
-                    message: "Post Deleted Successfully"
+                    message: "Upvote Deleted Successfully!",
                 })
             }
             else {
                 res.status(500).json({
                     status: false,
-                    message: "Failed to update Post"
+                    message: "Can't able to perform destroy query"
                 })
             }
         }
         else {
-            res.status(404).json({
-                status: false,
-                message: "Post not found"
+            const response = await UpvoteModel.create({
+                UserId: req.userId,
+                PostId: postId
             })
+
+
+            if (response) {
+                res.status(200).json({
+                    status: true,
+                    message: "Upvote Added Successfully!",
+                })
+            }
+            else {
+                res.status(500).json({
+                    status: false,
+                    message: "Can't able to perform destroy query"
+                })
+            }
         }
     } catch (error) {
         res.status(500).json({
@@ -279,6 +355,4 @@ const deletePost = async (req, res) => {
 
 
 
-
-
-module.exports = { createPost, updatePost, deletePost, allPosts, userPosts }
+module.exports = { createPost, updatePost, deletePost, allPosts, userPosts, upvotePost }
