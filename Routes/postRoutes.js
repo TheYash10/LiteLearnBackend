@@ -8,6 +8,7 @@ const {
   deletePost,
   allPosts,
   userPosts,
+  upvotePost,
 } = require("../Controllers/postControllers");
 
 router.use(validateToken);
@@ -20,5 +21,7 @@ router.delete("/:id/delete", deletePost);
 router.get("/allPosts", allPosts);
 
 router.get("/:id/allPosts", userPosts);
+
+router.post("/:id/upvote", upvotePost);
 
 module.exports = router;
