@@ -61,7 +61,6 @@ const updatePost = async (req, res) => {
         });
 
         if (postData) {
-
             if (req.userId === postData.createdby) {
                 const updatedPost = await Post.update({
                     filetype: req.body.filetype,
@@ -110,7 +109,7 @@ const updatePost = async (req, res) => {
 }
 
 const allPosts = async (req, res) => {
-    const page = req.query.page || 1; // Page number, default to 1
+    const page = req.params.page || 1; // Page number, default to 1
     const pageSize = 10; // Number of posts per page
 
     try {
@@ -176,7 +175,7 @@ const allPosts = async (req, res) => {
 }
 
 const userPosts = async (req, res) => {
-    const page = req.query.page || 1; // Page number, default to 1
+    const page = req.params.page || 1; // Page number, default to 1
     const pageSize = 10; // Number of posts per page
     try {
         const offset = (page - 1) * pageSize;
@@ -353,6 +352,74 @@ const upvotePost = async (req, res) => {
     }
 }
 
+const getPostByTag = async (req, res) => {
+    let tag = req.params.tag;
+    const page = req.params.page || 1; // Page number, default to 1
+    const pageSize = 10; // Number of posts per page
+    try {
+        const offset = (page - 1) * pageSize;
+        const posts = await Post.findAll({
+            limit: pageSize,
+            offset: offset,
+            order: [['createdat', 'DESC']],
+            where: {
+                tag: tag
+            }
+
+        })
+        if (posts.length !== 0) {
+            const postsWithUpvotes = await Promise.all(
+                posts.map(async (post) => {
+                    const ListOfUpvotes = await UpvoteModel.findAll({
+                        where: {
+                            postid: post.id
+                        }
+                    });
+                    const data = await User.findOne({
+                        where: {
+                            id: post.createdby
+                        }
+                    })
+
+                    const userDetails = {
+                        username: data.username,
+                        id: data.id,
+                        profile: data.profile
+                    }
+                    var listOfUserIdUpvote = ListOfUpvotes.map((item) => {
+                        return item['UserId']
+                    })
+                    return {
+                        ...post.toJSON(),
+                        listOfUserIdUpvote,
+                        userDetails
+                    };
+                })
+            );
+            res.status(200).json({
+                status: true,
+                message: "List of All Posts",
+                Posts: postsWithUpvotes,
+            })
+        }
+        else {
+            res.status(404).json({
+                status: false,
+                message: "Post not found"
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: error.message
+        })
+    }
 
 
-module.exports = { createPost, updatePost, deletePost, allPosts, userPosts, upvotePost }
+
+
+}
+
+
+
+module.exports = { createPost, updatePost, deletePost, allPosts, userPosts, upvotePost, getPostByTag }
