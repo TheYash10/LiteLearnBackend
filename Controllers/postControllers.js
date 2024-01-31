@@ -3,6 +3,7 @@ const { Post } = require('../models');
 const User = require('../models').User;
 
 const { UpvoteModel } = require("../models");
+const uuid = require('uuid')
 
 // Create New Post 
 
@@ -17,6 +18,7 @@ const createPost = async (req, res) => {
 
     try {
         const newPost = await Post.create({
+            id: uuid.uuidV4(),
             filetype,
             attachment,
             tag,
