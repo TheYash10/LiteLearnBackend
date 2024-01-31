@@ -9,6 +9,7 @@ const {
   allPosts,
   userPosts,
   upvotePost,
+  getPostByTag,
 } = require("../Controllers/postControllers");
 
 router.use(validateToken);
@@ -18,10 +19,12 @@ router.put("/:id/update", updatePost);
 
 router.delete("/:id/delete", deletePost);
 
-router.get("/allPosts", allPosts);
+router.get("/allPosts/:page", allPosts);
 
-router.get("/:id/allPosts", userPosts);
+router.get("/:id/allPosts/:page", userPosts);
 
 router.post("/:id/upvote", upvotePost);
+
+router.get("/allPosts/:page/:tag", getPostByTag);
 
 module.exports = router;
