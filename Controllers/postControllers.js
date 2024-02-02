@@ -3,12 +3,18 @@ const { Post } = require("../models");
 const User = require("../models").User;
 
 const { UpvoteModel } = require("../models");
-const uuid = require("uuid");
 
 // Create New Post
 
 const createPost = async (req, res) => {
-  const { filetype, attachment, tag, domain, note, id } = req.body;
+  const {
+    filetype,
+    attachment,
+    tag,
+    domain,
+    note,
+    id
+  } = req.body;
 
   try {
     const newPost = await Post.create({
@@ -18,8 +24,8 @@ const createPost = async (req, res) => {
       tag,
       domain,
       note,
-      createdby: req.userId,
-    });
+      createdby: req.userId
+    })
 
     // Retrieve user details for the response
     const user = await User.findOne({
