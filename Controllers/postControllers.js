@@ -110,7 +110,7 @@ const allPosts = async (req, res) => {
     const posts = await Post.findAll({
       limit: pageSize,
       offset: offset,
-      order: [["createdat", "DESC"]],
+      order: [["createdAt", "DESC"]],
     });
     if (posts.length !== 0) {
       const postsWithUpvotes = await Promise.all(

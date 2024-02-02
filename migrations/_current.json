@@ -32,7 +32,7 @@
                 "note": {
                     "allowNull": true,
                     "field": "note",
-                    "seqType": "Sequelize.STRING"
+                    "seqType": "Sequelize.TEXT(\"long\")"
                 },
                 "createdAt": {
                     "allowNull": false,
@@ -138,10 +138,6 @@
                     "field": "password",
                     "seqType": "Sequelize.STRING"
                 },
-                "domain": {
-                    "field": "domain",
-                    "seqType": "Sequelize.STRING"
-                },
                 "createdAt": {
                     "allowNull": false,
                     "field": "createdAt",
@@ -156,8 +152,8 @@
             "indexes": []
         }
     },
-    "path": "/home/yashjariwala/WEB/LiteLearn/Backend/migrations/_current.json",
-    "backupPath": "/home/yashjariwala/WEB/LiteLearn/Backend/migrations/_current_bak.json",
-    "exists": true,
-    "revision": 3
+    "path": "/home/amarsingh/WebDev/React_Dev/litelearnBackend/LiteLearnBackend/migrations/_current.json",
+    "backupPath": "/home/amarsingh/WebDev/React_Dev/litelearnBackend/LiteLearnBackend/migrations/_current_bak.json",
+    "exists": false,
+    "revision": 1
 }

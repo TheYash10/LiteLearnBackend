@@ -5,9 +5,9 @@ const User = require("../models").User;
 const sendResetPasswordEmail = require("../middleware/nodeMailer");
 
 const registerUser = async (req, res) => {
-  const { username, password, email, domain } = req.body;
+  const { username, password, email } = req.body;
 
-  if (!username || !password || !email || !domain) {
+  if (!username || !password || !email) {
     return res.status(400).json({
       status: false,
       message: "All Fields are Mandatory!",
@@ -212,7 +212,7 @@ const resetPassword = async (req, res) => {
 };
 
 const signInWithGoogleCredentials = async (req, res) => {
-  const { username, email } = req.body;
+  const { username, email, profilePic } = req.body;
 
   try {
     const user = await User.findOne({
@@ -242,6 +242,7 @@ const signInWithGoogleCredentials = async (req, res) => {
         id: uuid.v4(),
         username,
         email,
+        profile: profilePic,
       });
 
       const token = jwt.sign(

@@ -3,22 +3,92 @@ const Sequelize = require("sequelize");
 /**
  * Actions summary:
  *
- * dropTable() => "UpvoteModel", deps: []
+ * createTable() => "Users", deps: []
+ * createTable() => "Posts", deps: [Users]
  * createTable() => "UpvoteModels", deps: [Posts, Users]
  *
  */
 
 const info = {
-  revision: 3,
-  name: "relations",
-  created: "2024-01-29T06:15:34.637Z",
+  revision: 1,
+  name: "userModelUpdated",
+  created: "2024-02-01T10:50:02.147Z",
   comment: "",
 };
 
 const migrationCommands = (transaction) => [
   {
-    fn: "dropTable",
-    params: ["UpvoteModel", { transaction }],
+    fn: "createTable",
+    params: [
+      "Users",
+      {
+        id: {
+          type: Sequelize.UUID,
+          field: "id",
+          allowNull: false,
+          primaryKey: true,
+          defaultValue: Sequelize.UUIDV4,
+        },
+        username: { type: Sequelize.STRING, field: "username" },
+        email: { type: Sequelize.STRING, field: "email", allowNull: false },
+        profile: { type: Sequelize.STRING, field: "profile", allowNull: true },
+        password: {
+          type: Sequelize.STRING,
+          field: "password",
+          allowNull: true,
+        },
+        createdAt: {
+          type: Sequelize.DATE,
+          field: "createdAt",
+          allowNull: false,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          field: "updatedAt",
+          allowNull: false,
+        },
+      },
+      { transaction },
+    ],
+  },
+  {
+    fn: "createTable",
+    params: [
+      "Posts",
+      {
+        id: {
+          type: Sequelize.UUID,
+          field: "id",
+          allowNull: false,
+          primaryKey: true,
+          defaultValue: Sequelize.UUIDV4,
+        },
+        filetype: { type: Sequelize.STRING, field: "filetype" },
+        attachment: { type: Sequelize.STRING, field: "attachment" },
+        tag: { type: Sequelize.STRING, field: "tag" },
+        domain: { type: Sequelize.STRING, field: "domain" },
+        note: { type: Sequelize.TEXT("long"), field: "note", allowNull: true },
+        createdAt: {
+          type: Sequelize.DATE,
+          field: "createdAt",
+          allowNull: false,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          field: "updatedAt",
+          allowNull: false,
+        },
+        createdby: {
+          type: Sequelize.UUID,
+          field: "createdby",
+          onUpdate: "CASCADE",
+          onDelete: "SET NULL",
+          references: { model: "Users", key: "id" },
+          allowNull: true,
+        },
+      },
+      { transaction },
+    ],
   },
   {
     fn: "createTable",
@@ -67,42 +137,15 @@ const migrationCommands = (transaction) => [
 const rollbackCommands = (transaction) => [
   {
     fn: "dropTable",
+    params: ["Posts", { transaction }],
+  },
+  {
+    fn: "dropTable",
     params: ["UpvoteModels", { transaction }],
   },
   {
-    fn: "createTable",
-    params: [
-      "UpvoteModel",
-      {
-        createdAt: {
-          type: Sequelize.DATE,
-          field: "createdAt",
-          allowNull: false,
-        },
-        updatedAt: {
-          type: Sequelize.DATE,
-          field: "updatedAt",
-          allowNull: false,
-        },
-        PostId: {
-          type: Sequelize.UUID,
-          field: "PostId",
-          onUpdate: "CASCADE",
-          onDelete: "CASCADE",
-          references: { model: "Posts", key: "id" },
-          primaryKey: true,
-        },
-        UserId: {
-          type: Sequelize.UUID,
-          field: "UserId",
-          onUpdate: "CASCADE",
-          onDelete: "CASCADE",
-          references: { model: "Users", key: "id" },
-          primaryKey: true,
-        },
-      },
-      { transaction },
-    ],
+    fn: "dropTable",
+    params: ["Users", { transaction }],
   },
 ];
 
