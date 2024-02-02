@@ -3,11 +3,7 @@ const jwt = require("jsonwebtoken");
 const validateToken = (req, res, next) => {
   let token = req.cookies.access_token;
 
-
-
   if (token) {
-
-
     if (!token) {
       return res.json({
         status: false,

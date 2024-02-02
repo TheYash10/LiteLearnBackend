@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
-      allowNull: false
+      allowNull: false,
     },
     username: {
       type: DataTypes.STRING,
@@ -19,27 +19,23 @@ module.exports = (sequelize, DataTypes) => {
     },
     profile: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
-    domain: {
-      type: DataTypes.STRING
-    }
   });
 
-  User.associate = models => {
+  User.associate = (models) => {
     User.hasMany(models.Post, {
-      foreignKey: 'createdby',
-      as: 'PostModel'
+      foreignKey: "createdby",
+      as: "PostModel",
     });
 
-
     User.belongsToMany(models.Post, {
-      through: "UpvoteModel"
-    })
+      through: "UpvoteModel",
+    });
   };
 
   return User;

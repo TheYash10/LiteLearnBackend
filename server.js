@@ -18,7 +18,7 @@ app.use(Express.json());
 app.use(cookieParser());
 
 app.use("/", authRoutes);
-app.use("/post", postRoutes)
+app.use("/post", postRoutes);
 
 app.listen(port, () => {
   console.log(`Server is now running on port no ${port}`);
