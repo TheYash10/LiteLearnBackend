@@ -7,14 +7,7 @@ const { UpvoteModel } = require("../models");
 // Create New Post
 
 const createPost = async (req, res) => {
-  const {
-    filetype,
-    attachment,
-    tag,
-    domain,
-    note,
-    id
-  } = req.body;
+  const { filetype, attachment, tag, domain, note, id } = req.body;
 
   try {
     const newPost = await Post.create({
@@ -24,8 +17,8 @@ const createPost = async (req, res) => {
       tag,
       domain,
       note,
-      createdby: req.userId
-    })
+      createdby: req.userId,
+    });
 
     // Retrieve user details for the response
     const user = await User.findOne({
