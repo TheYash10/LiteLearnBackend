@@ -19,12 +19,12 @@ router.put("/:id/update", updatePost);
 
 router.delete("/:id/delete", deletePost);
 
-router.get("/allPosts/:page", allPosts);
+router.get("/all/:page", allPosts);
 
 router.get("/:id/allPosts/:page", userPosts);
 
 router.post("/:id/upvote", upvotePost);
 
-router.get("/allPosts/:page/:tag", getPostByTag);
+router.get("/:tag/:page", getPostByTag);
 
 module.exports = router;
