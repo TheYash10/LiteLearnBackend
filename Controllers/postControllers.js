@@ -376,9 +376,9 @@ const getPostByTag = async (req, res) => {
         Posts: postsWithUpvotes,
       });
     } else {
-      res.status(404).json({
+      res.status(200).json({
         status: false,
-        message: "Post not found",
+        message: `Didn't find learning for "@${tag.toUpperCase()}"`,
       });
     }
   } catch (error) {
