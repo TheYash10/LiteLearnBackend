@@ -106,14 +106,14 @@ const allPosts = async (req, res) => {
 
   try {
     const offset = (page - 1) * pageSize;
-    const posts = await Post.findAll({
+    const { count, rows } = await Post.findAndCountAll({
       limit: pageSize,
       offset: offset,
       order: [["createdAt", "DESC"]],
     });
-    if (posts.length !== 0) {
+    if (rows.length !== 0) {
       const postsWithUpvotes = await Promise.all(
-        posts.map(async (post) => {
+        rows.map(async (post) => {
           const ListOfUpvotes = await UpvoteModel.findAll({
             where: {
               postid: post.id,
@@ -143,6 +143,7 @@ const allPosts = async (req, res) => {
 
       res.status(200).json({
         status: true,
+        totalPages: Math.ceil(count / pageSize),
         message: "List of All Posts",
         Posts: postsWithUpvotes,
       });
@@ -331,7 +332,7 @@ const getPostByTag = async (req, res) => {
   const pageSize = 10; // Number of posts per page
   try {
     const offset = (page - 1) * pageSize;
-    const posts = await Post.findAll({
+    const { count, rows } = await Post.findAndCountAll({
       limit: pageSize,
       offset: offset,
       order: [["createdat", "DESC"]],
@@ -339,9 +340,9 @@ const getPostByTag = async (req, res) => {
         tag: tag,
       },
     });
-    if (posts.length !== 0) {
+    if (rows.length !== 0) {
       const postsWithUpvotes = await Promise.all(
-        posts.map(async (post) => {
+        rows.map(async (post) => {
           const ListOfUpvotes = await UpvoteModel.findAll({
             where: {
               postid: post.id,
@@ -370,6 +371,7 @@ const getPostByTag = async (req, res) => {
       );
       res.status(200).json({
         status: true,
+        totalPages: Math.ceil(count / pageSize),
         message: "List of All Posts",
         Posts: postsWithUpvotes,
       });
