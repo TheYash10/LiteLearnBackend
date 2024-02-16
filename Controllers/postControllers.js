@@ -27,7 +27,7 @@ const createPost = async (req, res) => {
 
     res.status(200).json({
       status: true,
-      message: "Post Created Successfully!",
+      message: "Learning Created Successfully!",
       postDetails: newPost,
       userDetails: {
         id: user.id,
@@ -46,11 +46,16 @@ const createPost = async (req, res) => {
 
 const updatePost = async (req, res) => {
   try {
-    const postData = Post.findOne({
+    const postData = await Post.findOne({
       where: {
         id: req.params.id,
       },
     });
+
+    console.log("POST TO UPDATE : ", postData);
+
+    console.log("REQUESTNG USER : ", req.userId);
+    console.log("CREATEDBY USER_ID : ", postData.createdby);
 
     if (postData) {
       if (req.userId === postData.createdby) {
@@ -72,12 +77,12 @@ const updatePost = async (req, res) => {
         if (updatedPost) {
           res.status(200).json({
             status: true,
-            message: "Post Updated Successfully",
+            message: "Learning Updated Successfully",
           });
         } else {
           res.status(500).json({
             status: false,
-            message: "Failed to update Post",
+            message: "Failed to update learning",
           });
         }
       } else {
@@ -89,13 +94,13 @@ const updatePost = async (req, res) => {
     } else {
       res.status(404).json({
         status: false,
-        message: "Post not found",
+        message: "Learning not found",
       });
     }
   } catch (error) {
     res.status(500).json({
       status: false,
-      message: "Failed to update Post",
+      message: "Failed to update learning",
     });
   }
 };
@@ -135,7 +140,7 @@ const allPosts = async (req, res) => {
           });
           return {
             ...post.toJSON(),
-            listOfUserIdUpvote,
+            upvotes: listOfUserIdUpvote,
             userDetails,
           };
         })
@@ -144,13 +149,13 @@ const allPosts = async (req, res) => {
       res.status(200).json({
         status: true,
         totalPages: Math.ceil(count / pageSize),
-        message: "List of All Posts",
+        message: "List of All learnings",
         Posts: postsWithUpvotes,
       });
     } else {
       res.status(404).json({
         status: false,
-        message: "Post not found",
+        message: "Learning not found",
       });
     }
   } catch (error) {
@@ -206,13 +211,13 @@ const userPosts = async (req, res) => {
       );
       res.status(200).json({
         status: true,
-        message: "List of All Posts",
+        message: "List of All Learnings",
         Posts: postsWithUpvotes,
       });
     } else {
       res.status(404).json({
         status: false,
-        message: "Post not found",
+        message: "Learning not found",
       });
     }
   } catch (error) {
@@ -242,18 +247,18 @@ const deletePost = async (req, res) => {
         if (deletedPost) {
           res.status(200).json({
             status: true,
-            message: "Post Deleted Successfully",
+            message: "Learning Deleted Successfully",
           });
         } else {
           res.status(500).json({
             status: false,
-            message: "Failed to update Post",
+            message: "Failed to update learning",
           });
         }
       } else {
         res.status(404).json({
           status: false,
-          message: "Post not found",
+          message: "Learning not found",
         });
       }
     } else {
@@ -321,7 +326,7 @@ const upvotePost = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       status: false,
-      message: "Failed to update Post",
+      message: "Failed to upvote",
     });
   }
 };
@@ -364,7 +369,7 @@ const getPostByTag = async (req, res) => {
           });
           return {
             ...post.toJSON(),
-            listOfUserIdUpvote,
+            upvotes: listOfUserIdUpvote,
             userDetails,
           };
         })
@@ -372,7 +377,7 @@ const getPostByTag = async (req, res) => {
       res.status(200).json({
         status: true,
         totalPages: Math.ceil(count / pageSize),
-        message: "List of All Posts",
+        message: "List of All Learnings",
         Posts: postsWithUpvotes,
       });
     } else {

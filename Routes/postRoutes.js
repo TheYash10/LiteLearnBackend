@@ -23,7 +23,7 @@ router.get("/all/:page", allPosts);
 
 router.get("/:id/allPosts/:page", userPosts);
 
-router.post("/:id/upvote", upvotePost);
+router.put("/:id/upvote", upvotePost);
 
 router.get("/:tag/:page", getPostByTag);
 
