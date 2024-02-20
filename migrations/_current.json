@@ -139,15 +139,15 @@
                     "field": "updatedAt",
                     "seqType": "Sequelize.DATE"
                 },
-                "CommentId": {
-                    "unique": "UpvoteModels_CommentId_UserId_unique",
+                "PostId": {
+                    "unique": "UpvoteModels_UserId_PostId_unique",
                     "references": {
-                        "model": "Comments",
+                        "model": "Posts",
                         "key": "id"
                     },
                     "onDelete": "CASCADE",
                     "onUpdate": "CASCADE",
-                    "field": "CommentId",
+                    "field": "PostId",
                     "seqType": "Sequelize.UUID"
                 },
                 "UserId": {
@@ -159,17 +159,6 @@
                     "onDelete": "CASCADE",
                     "onUpdate": "CASCADE",
                     "field": "UserId",
-                    "seqType": "Sequelize.UUID"
-                },
-                "PostId": {
-                    "unique": "UpvoteModels_UserId_PostId_unique",
-                    "references": {
-                        "model": "Posts",
-                        "key": "id"
-                    },
-                    "onDelete": "CASCADE",
-                    "onUpdate": "CASCADE",
-                    "field": "PostId",
                     "seqType": "Sequelize.UUID"
                 }
             },
@@ -224,5 +213,5 @@
     "path": "/home/amarsingh/WebDev/React_Dev/litelearnBackend/LiteLearnBackend/migrations/_current.json",
     "backupPath": "/home/amarsingh/WebDev/React_Dev/litelearnBackend/LiteLearnBackend/migrations/_current_bak.json",
     "exists": true,
-    "revision": 4
+    "revision": 5
 }

@@ -116,7 +116,7 @@ const allPosts = async (req, res) => {
         rows.map(async (post) => {
           const ListOfUpvotes = await UpvoteModel.findAll({
             where: {
-              postid: post.id,
+              postId: post.id,
             },
           });
           const data = await User.findOne({

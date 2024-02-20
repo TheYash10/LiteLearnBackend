@@ -81,17 +81,6 @@
                     "field": "updatedAt",
                     "seqType": "Sequelize.DATE"
                 },
-                "CommentId": {
-                    "unique": "UpvoteModels_CommentId_UserId_unique",
-                    "references": {
-                        "model": "Comments",
-                        "key": "id"
-                    },
-                    "onDelete": "CASCADE",
-                    "onUpdate": "CASCADE",
-                    "field": "CommentId",
-                    "seqType": "Sequelize.UUID"
-                },
                 "UserId": {
                     "unique": "UpvoteModels_UserId_PostId_unique",
                     "references": {
@@ -166,5 +155,5 @@
     "path": "/home/amarsingh/WebDev/React_Dev/litelearnBackend/LiteLearnBackend/migrations/_current.json",
     "backupPath": "/home/amarsingh/WebDev/React_Dev/litelearnBackend/LiteLearnBackend/migrations/_current_bak.json",
     "exists": true,
-    "revision": 3
+    "revision": 4
 }

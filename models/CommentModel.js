@@ -28,10 +28,6 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "postId",
       as: "PostModel",
     });
-
-    Comment.belongsToMany(models.User, {
-      through: "UpvoteModel",
-    });
   };
 
   return Comment;

@@ -4,6 +4,7 @@
 const Express = require("express");
 const authRoutes = require("./Routes/authRoutes.js");
 const postRoutes = require("./Routes/postRoutes.js");
+const commentRoutes = require("./Routes/commentRoutes.js");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv").config();
 const cookieParser = require("cookie-parser");
@@ -19,6 +20,7 @@ app.use(cookieParser());
 
 app.use("/", authRoutes);
 app.use("/post", postRoutes);
+app.use("/comment", commentRoutes);
 
 app.listen(port, () => {
   console.log(`Server is now running on port no ${port}`);

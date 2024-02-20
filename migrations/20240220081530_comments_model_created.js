@@ -8,9 +8,9 @@ const Sequelize = require("sequelize");
  */
 
 const info = {
-  revision: 4,
+  revision: 5,
   name: "comments_model_created",
-  created: "2024-02-20T06:05:45.798Z",
+  created: "2024-02-20T08:15:30.558Z",
   comment: "",
 };
 
