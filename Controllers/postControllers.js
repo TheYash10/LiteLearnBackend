@@ -52,11 +52,6 @@ const updatePost = async (req, res) => {
       },
     });
 
-    console.log("POST TO UPDATE : ", postData);
-
-    console.log("REQUESTNG USER : ", req.userId);
-    console.log("CREATEDBY USER_ID : ", postData.createdby);
-
     if (postData) {
       if (req.userId === postData.createdby) {
         const updatedPost = await Post.update(

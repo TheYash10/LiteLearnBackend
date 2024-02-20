@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "migration-run": "npx sequelize-cli db:migrate",
     "start": "nodemon server.js"
   },
   "keywords": [],
