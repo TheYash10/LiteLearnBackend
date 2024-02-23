@@ -1,12 +1,13 @@
-const { Post, Comment } = require("../models");
+const { Post, Comment, User } = require("../models");
 
 const AddCommentOnPost = async (req, res) => {
   const { comment, commentId } = req.body;
+  const learningId = req.params.learningId;
 
   try {
     const post = await Post.findOne({
       where: {
-        id: req.params.postId,
+        id: learningId,
       },
     });
 
@@ -16,14 +17,24 @@ const AddCommentOnPost = async (req, res) => {
         comment,
         parentId: "-",
         commentedBy: req.userId,
-        postId: req.params.postId,
+        postId: learningId,
       });
 
       if (newComment) {
+        const userData = await User.findOne({
+          where: {
+            id: newComment.commentedBy,
+          },
+        });
+
         return res.status(200).json({
           status: true,
           message: "Thanks for your comment.",
-          newComment,
+          newComment: {
+            ...newComment.dataValues,
+            commentByUsername: userData.username,
+            commentByProfile: userData.profile,
+          },
         });
       } else {
         return res.status(500).json({
@@ -43,8 +54,6 @@ const AddCommentOnPost = async (req, res) => {
       message: error.message,
     });
   }
-
-  res.status(200).json({ comment, parentId });
 };
 
 const deleteCommentOnPost = async (req, res) => {
@@ -79,8 +88,110 @@ const deleteCommentOnPost = async (req, res) => {
       res.status(200).json({
         status: true,
         message: "Comment deleted successfully.",
+        commentId,
       });
     });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
+const getCommentsByPostId = async (req, res) => {
+  const learningId = req.params.learningId;
+
+  try {
+    const { count, rows } = await Comment.findAndCountAll({
+      where: {
+        postId: learningId,
+      },
+      order: [["createdAt", "DESC"]],
+    });
+
+    console.log("ROWS : ", rows);
+
+    let formatedListOfComments;
+    if (rows.length !== 0) {
+      formatedListOfComments = await Promise.all(
+        rows.map(async (comment) => {
+          const userData = await User.findOne({
+            where: {
+              id: comment.commentedBy,
+            },
+          });
+
+          comment.commentByUsername = userData.username;
+          comment.commentByProfile = userData.profile;
+
+          return {
+            ...comment.dataValues,
+            commentByUsername: userData.username,
+            commentByProfile: userData.profile,
+          };
+        })
+      );
+    } else {
+      formatedListOfComments = [];
+    }
+
+    res.status(200).json({
+      status: true,
+      comments: formatedListOfComments,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
+const addReplyOnComment = async (req, res) => {
+  const { reply, replyId, parentId } = req.body;
+  const learningId = req.params.learningId;
+
+  try {
+    const comment = await Comment.findOne({
+      where: {
+        id: parentId,
+      },
+    });
+
+    if (!comment) {
+      return res.status(404).json({
+        status: false,
+        message: "Such comment not found!",
+      });
+    }
+
+    const post = await Post.findOne({
+      where: {
+        id: learningId,
+      },
+    });
+
+    if (!post) {
+      return res.status(404).json({
+        status: false,
+        message: "Such learning not found!",
+      });
+    }
+
+    const newReply = await Comment.create({
+      id: replyId,
+      comment: reply,
+      parentId,
+      commentedBy: req.userId,
+      postId: learningId,
+    });
+
+    if (newReply) {
+      const userData = await User.findOne({
+        where: {},
+      });
+    }
   } catch (error) {
     res.status(500).json({
       status: false,
@@ -92,4 +203,5 @@ const deleteCommentOnPost = async (req, res) => {
 module.exports = {
   AddCommentOnPost,
   deleteCommentOnPost,
+  getCommentsByPostId,
 };

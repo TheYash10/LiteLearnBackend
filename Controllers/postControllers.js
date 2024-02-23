@@ -119,6 +119,7 @@ const allPosts = async (req, res) => {
               postId: post.id,
             },
           });
+
           const data = await User.findOne({
             where: {
               id: post.createdby,
