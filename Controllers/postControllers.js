@@ -1,4 +1,4 @@
-const { Post } = require("../models");
+const { Post, Comment } = require("../models");
 
 const User = require("../models").User;
 
@@ -120,6 +120,13 @@ const allPosts = async (req, res) => {
             },
           });
 
+          const { count, rows } = await Comment.findAndCountAll({
+            where: {
+              postId: post.id,
+              repliedToId: "-",
+            },
+          });
+
           const data = await User.findOne({
             where: {
               id: post.createdby,
@@ -138,6 +145,7 @@ const allPosts = async (req, res) => {
             ...post.toJSON(),
             upvotes: listOfUserIdUpvote,
             userDetails,
+            commentCount: count,
           };
         })
       );
