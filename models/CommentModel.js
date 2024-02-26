@@ -12,8 +12,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT("long"),
       allowNull: true,
     },
+    repliedToId: {
+      type: DataTypes.STRING,
+      defaultValue: "-",
+      allowNull: true,
+    },
     parentId: {
       type: DataTypes.STRING,
+      defaultValue: "-",
       allowNull: true,
     },
   });

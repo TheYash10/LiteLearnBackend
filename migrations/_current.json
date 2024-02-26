@@ -18,7 +18,18 @@
                     "field": "comment",
                     "seqType": "Sequelize.TEXT(\"long\")"
                 },
+                "repliedToId": {
+                    "defaultValue": {
+                        "value": "-"
+                    },
+                    "allowNull": true,
+                    "field": "repliedToId",
+                    "seqType": "Sequelize.STRING"
+                },
                 "parentId": {
+                    "defaultValue": {
+                        "value": "-"
+                    },
                     "allowNull": true,
                     "field": "parentId",
                     "seqType": "Sequelize.STRING"
@@ -213,5 +224,5 @@
     "path": "/home/amarsingh/WebDev/React_Dev/litelearnBackend/LiteLearnBackend/migrations/_current.json",
     "backupPath": "/home/amarsingh/WebDev/React_Dev/litelearnBackend/LiteLearnBackend/migrations/_current_bak.json",
     "exists": true,
-    "revision": 5
+    "revision": 2
 }

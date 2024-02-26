@@ -15,7 +15,6 @@ const AddCommentOnPost = async (req, res) => {
       const newComment = await Comment.create({
         id: commentId,
         comment,
-        parentId: "-",
         commentedBy: req.userId,
         postId: learningId,
       });
@@ -56,6 +55,14 @@ const AddCommentOnPost = async (req, res) => {
   }
 };
 
+const deleteAllRelatedReplies = async (parentId, res) => {
+  await Comment.destroy({
+    where: {
+      parentId,
+    },
+  });
+};
+
 const deleteCommentOnPost = async (req, res) => {
   const commentId = req.params.commentId;
 
@@ -84,7 +91,9 @@ const deleteCommentOnPost = async (req, res) => {
       where: {
         id: commentId,
       },
-    }).then((val) => {
+    }).then(async (val) => {
+      await deleteAllRelatedReplies(commentId);
+
       res.status(200).json({
         status: true,
         message: "Comment deleted successfully.",
@@ -106,11 +115,10 @@ const getCommentsByPostId = async (req, res) => {
     const { count, rows } = await Comment.findAndCountAll({
       where: {
         postId: learningId,
+        repliedToId: "-",
       },
       order: [["createdAt", "DESC"]],
     });
-
-    console.log("ROWS : ", rows);
 
     let formatedListOfComments;
     if (rows.length !== 0) {
@@ -121,9 +129,6 @@ const getCommentsByPostId = async (req, res) => {
               id: comment.commentedBy,
             },
           });
-
-          comment.commentByUsername = userData.username;
-          comment.commentByProfile = userData.profile;
 
           return {
             ...comment.dataValues,
@@ -140,58 +145,6 @@ const getCommentsByPostId = async (req, res) => {
       status: true,
       comments: formatedListOfComments,
     });
-  } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: error.message,
-    });
-  }
-};
-
-const addReplyOnComment = async (req, res) => {
-  const { reply, replyId, parentId } = req.body;
-  const learningId = req.params.learningId;
-
-  try {
-    const comment = await Comment.findOne({
-      where: {
-        id: parentId,
-      },
-    });
-
-    if (!comment) {
-      return res.status(404).json({
-        status: false,
-        message: "Such comment not found!",
-      });
-    }
-
-    const post = await Post.findOne({
-      where: {
-        id: learningId,
-      },
-    });
-
-    if (!post) {
-      return res.status(404).json({
-        status: false,
-        message: "Such learning not found!",
-      });
-    }
-
-    const newReply = await Comment.create({
-      id: replyId,
-      comment: reply,
-      parentId,
-      commentedBy: req.userId,
-      postId: learningId,
-    });
-
-    if (newReply) {
-      const userData = await User.findOne({
-        where: {},
-      });
-    }
   } catch (error) {
     res.status(500).json({
       status: false,

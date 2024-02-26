@@ -11,4 +11,6 @@ router.post("/:learningId", validateToken, AddCommentOnPost);
 router.delete("/:commentId/delete", validateToken, deleteCommentOnPost);
 router.get("/:learningId", validateToken, getCommentsByPostId);
 
+router;
+
 module.exports = router;

@@ -3,24 +3,29 @@ const Sequelize = require("sequelize");
 /**
  * Actions summary:
  *
- * changeColumn(note) => "Posts"
+ * addColumn(parentId) => "Comments"
  *
  */
 
 const info = {
-  revision: 4,
-  name: "relations",
-  created: "2024-02-01T11:09:18.843Z",
+  revision: 2,
+  name: "parentId_again_added_to_commentModel",
+  created: "2024-02-26T09:19:29.120Z",
   comment: "",
 };
 
 const migrationCommands = (transaction) => [
   {
-    fn: "changeColumn",
+    fn: "addColumn",
     params: [
-      "Posts",
-      "note",
-      { type: Sequelize.TEXT("long"), field: "note", allowNull: true },
+      "Comments",
+      "parentId",
+      {
+        type: Sequelize.STRING,
+        field: "parentId",
+        allowNull: true,
+        defaultValue: "-",
+      },
       { transaction },
     ],
   },
@@ -28,13 +33,8 @@ const migrationCommands = (transaction) => [
 
 const rollbackCommands = (transaction) => [
   {
-    fn: "changeColumn",
-    params: [
-      "Posts",
-      "note",
-      { type: Sequelize.STRING, field: "note", allowNull: true },
-      { transaction },
-    ],
+    fn: "removeColumn",
+    params: ["Comments", "parentId", { transaction }],
   },
 ];
 
