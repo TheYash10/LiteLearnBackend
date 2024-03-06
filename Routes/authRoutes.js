@@ -7,6 +7,8 @@ const {
   forgotPassword,
   resetPassword,
   signInWithGoogleCredentials,
+  updateUserProfileDetails,
+  changePassword,
 } = require("../Controllers/authControllers.js");
 const validateToken = require("../middleware/validateToken.js");
 
@@ -27,8 +29,13 @@ router.post("/forgot-password", forgotPassword);
 // Reset Password
 router.post("/reset-password", resetPassword);
 
+//Update User Details
+router.put("/updateProfile", validateToken, updateUserProfileDetails);
+
+//Change Password
+router.put("/changePassword", validateToken, changePassword);
+
 // Sign-In with Google
 router.post("/signin-with-google", signInWithGoogleCredentials);
-
 
 module.exports = router;
