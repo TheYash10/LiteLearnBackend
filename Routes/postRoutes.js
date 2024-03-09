@@ -17,7 +17,7 @@ router.post("/create", createPost);
 
 router.put("/:id/update", updatePost);
 
-router.delete("/:id/delete", deletePost);
+router.delete("/:id/delete", validateToken, deletePost);
 
 router.get("/all/:page", allPosts);
 

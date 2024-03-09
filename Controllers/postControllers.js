@@ -83,7 +83,7 @@ const updatePost = async (req, res) => {
       } else {
         res.status(401).json({
           status: false,
-          message: "User is not Authorized",
+          message: "You'r not authorized to updated this learning!",
         });
       }
     } else {
@@ -234,43 +234,43 @@ const userPosts = async (req, res) => {
 
 const deletePost = async (req, res) => {
   try {
-    const postData = await Post.findOne({
+    const userId = req.userId;
+    const learningToDelete = await Post.findOne({
       where: {
         id: req.params.id,
       },
     });
 
-    if (req.userId === postData.createdby) {
-      if (postData) {
-        const deletedPost = await Post.destroy({
-          where: {
-            id: req.params.id,
-          },
-        });
-
-        if (deletedPost) {
-          res.status(200).json({
-            status: true,
-            message: "Learning Deleted Successfully",
-          });
-        } else {
-          res.status(500).json({
-            status: false,
-            message: "Failed to update learning",
-          });
-        }
-      } else {
-        res.status(404).json({
-          status: false,
-          message: "Learning not found",
-        });
-      }
-    } else {
-      res.status(401).json({
+    if (!learningToDelete) {
+      return res.status(404).json({
         status: false,
-        message: "User is not authorized",
+        message: "Such learning not found.",
       });
     }
+
+    if (userId !== learningToDelete.createdby) {
+      return res.status(401).json({
+        status: false,
+        message: "You'r not authorized to delete this learning!",
+      });
+    }
+
+    await Comment.destroy({
+      where: {
+        postId: learningToDelete.id,
+      },
+    }).then(async () => {
+      await Post.destroy({
+        where: {
+          id: learningToDelete.id,
+        },
+      }).then(() => {
+        return res.status(200).json({
+          status: true,
+          message: "Learning deleted successfully.",
+        });
+      });
+    });
   } catch (error) {
     res.status(500).json({
       status: false,
