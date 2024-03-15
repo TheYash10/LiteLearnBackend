@@ -345,6 +345,17 @@ const updateUserProfileDetails = async (req, res) => {
   }
 };
 
+const userFeedback = (req, res) => {
+  const { learningId, userId } = req.body;
+  try {
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -354,4 +365,5 @@ module.exports = {
   signInWithGoogleCredentials,
   updateUserProfileDetails,
   changePassword,
+  userFeedback,
 };

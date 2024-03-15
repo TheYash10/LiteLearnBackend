@@ -398,6 +398,17 @@ const getPostByTag = async (req, res) => {
   }
 };
 
+const bookmarkLearning = (req, res) => {
+  const { learningId, userId } = req.body;
+  try {
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createPost,
   updatePost,
@@ -406,4 +417,5 @@ module.exports = {
   userPosts,
   upvotePost,
   getPostByTag,
+  bookmarkLearning,
 };

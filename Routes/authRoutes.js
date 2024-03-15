@@ -9,10 +9,15 @@ const {
   signInWithGoogleCredentials,
   updateUserProfileDetails,
   changePassword,
+  userFeedback,
 } = require("../Controllers/authControllers.js");
 const validateToken = require("../middleware/validateToken.js");
+const { route } = require("./postRoutes.js");
 
 const router = Express.Router();
+
+//feedback from user
+router.post("/feedback", userFeedback);
 
 // Register a User
 router.post("/register", registerUser);
