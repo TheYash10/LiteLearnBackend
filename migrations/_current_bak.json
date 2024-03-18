@@ -26,6 +26,14 @@
                     "field": "repliedToId",
                     "seqType": "Sequelize.STRING"
                 },
+                "parentId": {
+                    "defaultValue": {
+                        "value": "-"
+                    },
+                    "allowNull": true,
+                    "field": "parentId",
+                    "seqType": "Sequelize.STRING"
+                },
                 "createdAt": {
                     "allowNull": false,
                     "field": "createdAt",
@@ -215,6 +223,6 @@
     },
     "path": "/home/amarsingh/WebDev/React_Dev/litelearnBackend/LiteLearnBackend/migrations/_current.json",
     "backupPath": "/home/amarsingh/WebDev/React_Dev/litelearnBackend/LiteLearnBackend/migrations/_current_bak.json",
-    "exists": false,
-    "revision": 1
+    "exists": true,
+    "revision": 2
 }

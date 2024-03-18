@@ -1,4 +1,4 @@
-const { Post, Comment } = require("../models");
+const { Post, Comment, Bookmark, Feedback } = require("../models");
 
 const User = require("../models").User;
 
@@ -138,9 +138,11 @@ const allPosts = async (req, res) => {
             id: data.id,
             profile: data.profile,
           };
+
           var listOfUserIdUpvote = ListOfUpvotes.map((item) => {
             return item["UserId"];
           });
+
           return {
             ...post.toJSON(),
             upvotes: listOfUserIdUpvote,
@@ -349,7 +351,7 @@ const getPostByTag = async (req, res) => {
         tag: tag,
       },
     });
-    if (rows.length !== 0) {
+    if (rows.length > 0) {
       const postsWithUpvotes = await Promise.all(
         rows.map(async (post) => {
           const ListOfUpvotes = await UpvoteModel.findAll({
@@ -398,9 +400,122 @@ const getPostByTag = async (req, res) => {
   }
 };
 
-const bookmarkLearning = (req, res) => {
+const bookmarkLearning = async (req, res) => {
   const { learningId, userId } = req.body;
   try {
+    const existingBookmark = await Bookmark.findOne({
+      where: {
+        bookmark: learningId,
+        bookmarkedBy: userId,
+      },
+    });
+
+    if (existingBookmark) {
+      await existingBookmark.destroy().then(() => {
+        return res.status(200).json({
+          status: true,
+          message: "Learning removed from bookmarks",
+        });
+      });
+    }
+
+    const newBookmark = await Bookmark.create({
+      bookmark: learningId,
+      bookmarkedBy: userId,
+    });
+
+    if (newBookmark) {
+      const { createdAt, updatedAt, ...rest } = newBookmark;
+
+      res.status(200).json({
+        status: true,
+        message: "Learning added to bookmarks",
+        newBookmark,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
+const fetchAllBookmarks = async (req, res) => {
+  const userId = req.userId;
+  try {
+    const { count, rows } = await Bookmark.findAndCountAll({
+      where: {
+        userId,
+      },
+    });
+
+    res.status(200).json({
+      status: true,
+      count,
+      bookmarks: rows,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
+const clearAllBookmarks = async (req, res) => {
+  const userId = req.userId;
+  try {
+    const allBookmarksDeleted = await Bookmark.destroy({
+      where: {
+        userId,
+      },
+    });
+
+    if (!allBookmarksDeleted) {
+      return res.status(204).json({
+        status: false,
+        message: "Failed to clear bookmarks. Try again later",
+      });
+    }
+
+    res.status(200).json({
+      status: true,
+      message: "All bookmarks cleared successfully.",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
+const clearBookmarkById = async (req, res) => {
+  const { bookmarkId } = req.body;
+  try {
+    const existingBookmark = await Bookmark.findOne({
+      where: { id: bookmarkId },
+    });
+
+    if (!existingBookmark) {
+      return res.status(404).json({
+        status: false,
+        message: "Bookmark not found.",
+      });
+    }
+
+    await existingBookmark.destroy().then(() => {
+      return res.status(200).json({
+        status: true,
+        message: "Bookmark removed successfully",
+      });
+    });
+
+    res.status(204).json({
+      status: false,
+      message: "Failed to remove bookmark",
+    });
   } catch (error) {
     res.status(500).json({
       status: false,
@@ -418,4 +533,7 @@ module.exports = {
   upvotePost,
   getPostByTag,
   bookmarkLearning,
+  fetchAllBookmarks,
+  clearAllBookmarks,
+  clearBookmarkById,
 };
