@@ -312,7 +312,8 @@ const updateUserProfileDetails = async (req, res) => {
   try {
     const id = req.userId;
     const newData = req.body;
-    const existingUser = await User.findOne({ id });
+    const existingUser = await User.findOne({ where: { id } });
+
     if (!existingUser) {
       return res
         .status(500)

@@ -1,4 +1,5 @@
 const { Post, Comment, User } = require("../models");
+const { updateLeaderboardData } = require("./leaderboardController");
 
 const AddCommentOnPost = async (req, res) => {
   const { comment, commentId } = req.body;
@@ -18,6 +19,8 @@ const AddCommentOnPost = async (req, res) => {
         commentedBy: req.userId,
         postId: learningId,
       });
+
+      await updateLeaderboardData(post.createdby, 1, 0);
 
       if (newComment) {
         const userData = await User.findOne({
@@ -73,6 +76,17 @@ const deleteCommentOnPost = async (req, res) => {
       },
     });
 
+    const post = await Post.findOne({
+      where: { id: comment.postId },
+    });
+
+    if (!post) {
+      return res.status(404).json({
+        status: false,
+        message: "No such post found.",
+      });
+    }
+
     if (comment === null) {
       return res.status(404).json({
         status: false,
@@ -93,6 +107,8 @@ const deleteCommentOnPost = async (req, res) => {
       },
     }).then(async (val) => {
       await deleteAllRelatedReplies(commentId);
+
+      await updateLeaderboardData(post.createdby, -1, 0);
 
       res.status(200).json({
         status: true,

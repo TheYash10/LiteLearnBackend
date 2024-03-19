@@ -1,5 +1,47 @@
 {
     "tables": {
+        "Bookmarks": {
+            "tableName": "Bookmarks",
+            "schema": {
+                "id": {
+                    "allowNull": false,
+                    "defaultValue": {
+                        "internal": true,
+                        "value": "Sequelize.UUIDV4"
+                    },
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "bookmark": {
+                    "allowNull": false,
+                    "field": "bookmark",
+                    "seqType": "Sequelize.UUID"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "bookmarkedBy": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Users",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "bookmarkedBy",
+                    "seqType": "Sequelize.UUID"
+                }
+            },
+            "indexes": []
+        },
         "Comments": {
             "tableName": "Comments",
             "schema": {
@@ -64,6 +106,101 @@
                     "onDelete": "SET NULL",
                     "onUpdate": "CASCADE",
                     "field": "postId",
+                    "seqType": "Sequelize.UUID"
+                }
+            },
+            "indexes": []
+        },
+        "Feedbacks": {
+            "tableName": "Feedbacks",
+            "schema": {
+                "id": {
+                    "allowNull": false,
+                    "defaultValue": {
+                        "internal": true,
+                        "value": "Sequelize.UUIDV4"
+                    },
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "feedback": {
+                    "allowNull": false,
+                    "field": "feedback",
+                    "seqType": "Sequelize.TEXT(\"long\")"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "feedbackBy": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Users",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "feedbackBy",
+                    "seqType": "Sequelize.UUID"
+                }
+            },
+            "indexes": []
+        },
+        "Leaderboards": {
+            "tableName": "Leaderboards",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "allowNull": false,
+                    "defaultValue": {
+                        "internal": true,
+                        "value": "Sequelize.UUIDV4"
+                    },
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "totalComments": {
+                    "defaultValue": {
+                        "value": 0
+                    },
+                    "allowNull": false,
+                    "field": "totalComments",
+                    "seqType": "Sequelize.BIGINT"
+                },
+                "totalUpvotes": {
+                    "defaultValue": {
+                        "value": 0
+                    },
+                    "allowNull": false,
+                    "field": "totalUpvotes",
+                    "seqType": "Sequelize.BIGINT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "userId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Users",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "userId",
                     "seqType": "Sequelize.UUID"
                 }
             },
@@ -224,5 +361,5 @@
     "path": "/home/amarsingh/WebDev/React_Dev/litelearnBackend/LiteLearnBackend/migrations/_current.json",
     "backupPath": "/home/amarsingh/WebDev/React_Dev/litelearnBackend/LiteLearnBackend/migrations/_current_bak.json",
     "exists": true,
-    "revision": 2
+    "revision": 6
 }

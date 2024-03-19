@@ -3,6 +3,7 @@ const { Post, Comment, Bookmark, Feedback } = require("../models");
 const User = require("../models").User;
 
 const { UpvoteModel } = require("../models");
+const { updateLeaderboardData } = require("./leaderboardController");
 
 // Create New Post
 
@@ -285,6 +286,17 @@ const upvotePost = async (req, res) => {
   const postId = req.params.id;
 
   try {
+    const post = await Post.findOne({
+      where: { id: postId },
+    });
+
+    if (!post) {
+      return res.status(404).json({
+        status: false,
+        message: "No such post found.",
+      });
+    }
+
     const findId = await UpvoteModel.findOne({
       where: {
         UserId: req.userId,
@@ -316,6 +328,8 @@ const upvotePost = async (req, res) => {
         UserId: req.userId,
         PostId: postId,
       });
+
+      await updateLeaderboardData(post.createdby, 0, 1);
 
       if (response) {
         res.status(200).json({
