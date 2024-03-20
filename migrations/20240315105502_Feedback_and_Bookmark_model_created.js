@@ -3,16 +3,15 @@ const Sequelize = require("sequelize");
 /**
  * Actions summary:
  *
- * createTable() => "Users", deps: []
- * createTable() => "Posts", deps: [Users]
- * createTable() => "UpvoteModels", deps: [Posts, Users]
+ * createTable() => "Bookmarks", deps: [Users]
+ * createTable() => "Feedbacks", deps: [Users]
  *
  */
 
 const info = {
-  revision: 1,
-  name: "userModelUpdated",
-  created: "2024-02-02T05:00:47.928Z",
+  revision: 3,
+  name: "Feedback_and_Bookmark_model_created",
+  created: "2024-03-15T10:55:02.348Z",
   comment: "",
 };
 
@@ -20,23 +19,16 @@ const migrationCommands = (transaction) => [
   {
     fn: "createTable",
     params: [
-      "Users",
+      "Bookmarks",
       {
         id: {
           type: Sequelize.UUID,
           field: "id",
-          allowNull: false,
           primaryKey: true,
           defaultValue: Sequelize.UUIDV4,
+          allowNull: false,
         },
-        username: { type: Sequelize.STRING, field: "username" },
-        email: { type: Sequelize.STRING, field: "email", allowNull: false },
-        profile: { type: Sequelize.STRING, field: "profile", allowNull: true },
-        password: {
-          type: Sequelize.STRING,
-          field: "password",
-          allowNull: true,
-        },
+        bookmark: { type: Sequelize.UUID, field: "bookmark", allowNull: false },
         createdAt: {
           type: Sequelize.DATE,
           field: "createdAt",
@@ -47,40 +39,9 @@ const migrationCommands = (transaction) => [
           field: "updatedAt",
           allowNull: false,
         },
-      },
-      { transaction },
-    ],
-  },
-  {
-    fn: "createTable",
-    params: [
-      "Posts",
-      {
-        id: {
+        bookmarkedBy: {
           type: Sequelize.UUID,
-          field: "id",
-          allowNull: false,
-          primaryKey: true,
-          defaultValue: Sequelize.UUIDV4,
-        },
-        filetype: { type: Sequelize.STRING, field: "filetype" },
-        attachment: { type: Sequelize.STRING, field: "attachment" },
-        tag: { type: Sequelize.STRING, field: "tag" },
-        domain: { type: Sequelize.STRING, field: "domain" },
-        note: { type: Sequelize.TEXT("long"), field: "note", allowNull: true },
-        createdAt: {
-          type: Sequelize.DATE,
-          field: "createdAt",
-          allowNull: false,
-        },
-        updatedAt: {
-          type: Sequelize.DATE,
-          field: "updatedAt",
-          allowNull: false,
-        },
-        createdby: {
-          type: Sequelize.UUID,
-          field: "createdby",
+          field: "bookmarkedBy",
           onUpdate: "CASCADE",
           onDelete: "SET NULL",
           references: { model: "Users", key: "id" },
@@ -93,14 +54,19 @@ const migrationCommands = (transaction) => [
   {
     fn: "createTable",
     params: [
-      "UpvoteModels",
+      "Feedbacks",
       {
         id: {
           type: Sequelize.UUID,
           field: "id",
-          allowNull: false,
           primaryKey: true,
           defaultValue: Sequelize.UUIDV4,
+          allowNull: false,
+        },
+        feedback: {
+          type: Sequelize.TEXT("long"),
+          field: "feedback",
+          allowNull: false,
         },
         createdAt: {
           type: Sequelize.DATE,
@@ -112,21 +78,13 @@ const migrationCommands = (transaction) => [
           field: "updatedAt",
           allowNull: false,
         },
-        PostId: {
+        feedbackBy: {
           type: Sequelize.UUID,
-          field: "PostId",
+          field: "feedbackBy",
           onUpdate: "CASCADE",
-          onDelete: "CASCADE",
-          references: { model: "Posts", key: "id" },
-          unique: "UpvoteModels_UserId_PostId_unique",
-        },
-        UserId: {
-          type: Sequelize.UUID,
-          field: "UserId",
-          onUpdate: "CASCADE",
-          onDelete: "CASCADE",
+          onDelete: "SET NULL",
           references: { model: "Users", key: "id" },
-          unique: "UpvoteModels_UserId_PostId_unique",
+          allowNull: true,
         },
       },
       { transaction },
@@ -137,15 +95,11 @@ const migrationCommands = (transaction) => [
 const rollbackCommands = (transaction) => [
   {
     fn: "dropTable",
-    params: ["Posts", { transaction }],
+    params: ["Bookmarks", { transaction }],
   },
   {
     fn: "dropTable",
-    params: ["UpvoteModels", { transaction }],
-  },
-  {
-    fn: "dropTable",
-    params: ["Users", { transaction }],
+    params: ["Feedbacks", { transaction }],
   },
 ];
 

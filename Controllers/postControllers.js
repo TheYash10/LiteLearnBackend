@@ -1,8 +1,9 @@
-const { Post } = require("../models");
+const { Post, Comment, Bookmark, Feedback } = require("../models");
 
 const User = require("../models").User;
 
 const { UpvoteModel } = require("../models");
+const { updateLeaderboardData } = require("./leaderboardController");
 
 // Create New Post
 
@@ -27,7 +28,7 @@ const createPost = async (req, res) => {
 
     res.status(200).json({
       status: true,
-      message: "Post Created Successfully!",
+      message: "Learning Created Successfully!",
       postDetails: newPost,
       userDetails: {
         id: user.id,
@@ -46,7 +47,7 @@ const createPost = async (req, res) => {
 
 const updatePost = async (req, res) => {
   try {
-    const postData = Post.findOne({
+    const postData = await Post.findOne({
       where: {
         id: req.params.id,
       },
@@ -72,30 +73,30 @@ const updatePost = async (req, res) => {
         if (updatedPost) {
           res.status(200).json({
             status: true,
-            message: "Post Updated Successfully",
+            message: "Learning Updated Successfully",
           });
         } else {
           res.status(500).json({
             status: false,
-            message: "Failed to update Post",
+            message: "Failed to update learning",
           });
         }
       } else {
         res.status(401).json({
           status: false,
-          message: "User is not Authorized",
+          message: "You'r not authorized to updated this learning!",
         });
       }
     } else {
       res.status(404).json({
         status: false,
-        message: "Post not found",
+        message: "Learning not found",
       });
     }
   } catch (error) {
     res.status(500).json({
       status: false,
-      message: "Failed to update Post",
+      message: "Failed to update learning",
     });
   }
 };
@@ -116,9 +117,17 @@ const allPosts = async (req, res) => {
         rows.map(async (post) => {
           const ListOfUpvotes = await UpvoteModel.findAll({
             where: {
-              postid: post.id,
+              postId: post.id,
             },
           });
+
+          const { count, rows } = await Comment.findAndCountAll({
+            where: {
+              postId: post.id,
+              repliedToId: "-",
+            },
+          });
+
           const data = await User.findOne({
             where: {
               id: post.createdby,
@@ -130,13 +139,16 @@ const allPosts = async (req, res) => {
             id: data.id,
             profile: data.profile,
           };
+
           var listOfUserIdUpvote = ListOfUpvotes.map((item) => {
             return item["UserId"];
           });
+
           return {
             ...post.toJSON(),
-            listOfUserIdUpvote,
+            upvotes: listOfUserIdUpvote,
             userDetails,
+            commentCount: count,
           };
         })
       );
@@ -144,13 +156,13 @@ const allPosts = async (req, res) => {
       res.status(200).json({
         status: true,
         totalPages: Math.ceil(count / pageSize),
-        message: "List of All Posts",
+        message: "List of All learnings",
         Posts: postsWithUpvotes,
       });
     } else {
       res.status(404).json({
         status: false,
-        message: "Post not found",
+        message: "Learning not found",
       });
     }
   } catch (error) {
@@ -206,13 +218,13 @@ const userPosts = async (req, res) => {
       );
       res.status(200).json({
         status: true,
-        message: "List of All Posts",
+        message: "List of All Learnings",
         Posts: postsWithUpvotes,
       });
     } else {
       res.status(404).json({
         status: false,
-        message: "Post not found",
+        message: "Learning not found",
       });
     }
   } catch (error) {
@@ -225,43 +237,43 @@ const userPosts = async (req, res) => {
 
 const deletePost = async (req, res) => {
   try {
-    const postData = await Post.findOne({
+    const userId = req.userId;
+    const learningToDelete = await Post.findOne({
       where: {
         id: req.params.id,
       },
     });
 
-    if (req.userId === postData.createdby) {
-      if (postData) {
-        const deletedPost = await Post.destroy({
-          where: {
-            id: req.params.id,
-          },
-        });
-
-        if (deletedPost) {
-          res.status(200).json({
-            status: true,
-            message: "Post Deleted Successfully",
-          });
-        } else {
-          res.status(500).json({
-            status: false,
-            message: "Failed to update Post",
-          });
-        }
-      } else {
-        res.status(404).json({
-          status: false,
-          message: "Post not found",
-        });
-      }
-    } else {
-      res.status(401).json({
+    if (!learningToDelete) {
+      return res.status(404).json({
         status: false,
-        message: "User is not authorized",
+        message: "Such learning not found.",
       });
     }
+
+    if (userId !== learningToDelete.createdby) {
+      return res.status(401).json({
+        status: false,
+        message: "You'r not authorized to delete this learning!",
+      });
+    }
+
+    await Comment.destroy({
+      where: {
+        postId: learningToDelete.id,
+      },
+    }).then(async () => {
+      await Post.destroy({
+        where: {
+          id: learningToDelete.id,
+        },
+      }).then(() => {
+        return res.status(200).json({
+          status: true,
+          message: "Learning deleted successfully.",
+        });
+      });
+    });
   } catch (error) {
     res.status(500).json({
       status: false,
@@ -274,6 +286,17 @@ const upvotePost = async (req, res) => {
   const postId = req.params.id;
 
   try {
+    const post = await Post.findOne({
+      where: { id: postId },
+    });
+
+    if (!post) {
+      return res.status(404).json({
+        status: false,
+        message: "No such post found.",
+      });
+    }
+
     const findId = await UpvoteModel.findOne({
       where: {
         UserId: req.userId,
@@ -306,6 +329,8 @@ const upvotePost = async (req, res) => {
         PostId: postId,
       });
 
+      await updateLeaderboardData(post.createdby, 0, 1);
+
       if (response) {
         res.status(200).json({
           status: true,
@@ -321,7 +346,7 @@ const upvotePost = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       status: false,
-      message: "Failed to update Post",
+      message: "Failed to upvote",
     });
   }
 };
@@ -340,7 +365,7 @@ const getPostByTag = async (req, res) => {
         tag: tag,
       },
     });
-    if (rows.length !== 0) {
+    if (rows.length > 0) {
       const postsWithUpvotes = await Promise.all(
         rows.map(async (post) => {
           const ListOfUpvotes = await UpvoteModel.findAll({
@@ -364,7 +389,7 @@ const getPostByTag = async (req, res) => {
           });
           return {
             ...post.toJSON(),
-            listOfUserIdUpvote,
+            upvotes: listOfUserIdUpvote,
             userDetails,
           };
         })
@@ -372,15 +397,139 @@ const getPostByTag = async (req, res) => {
       res.status(200).json({
         status: true,
         totalPages: Math.ceil(count / pageSize),
-        message: "List of All Posts",
+        message: "List of All Learnings",
         Posts: postsWithUpvotes,
       });
     } else {
-      res.status(404).json({
+      res.status(200).json({
         status: false,
-        message: "Post not found",
+        message: `Didn't find learning for "@${tag.toUpperCase()}"`,
       });
     }
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
+const bookmarkLearning = async (req, res) => {
+  const { learningId, userId } = req.body;
+  try {
+    const existingBookmark = await Bookmark.findOne({
+      where: {
+        bookmark: learningId,
+        bookmarkedBy: userId,
+      },
+    });
+
+    if (existingBookmark) {
+      await existingBookmark.destroy().then(() => {
+        return res.status(200).json({
+          status: true,
+          message: "Learning removed from bookmarks",
+        });
+      });
+    }
+
+    const newBookmark = await Bookmark.create({
+      bookmark: learningId,
+      bookmarkedBy: userId,
+    });
+
+    if (newBookmark) {
+      const { createdAt, updatedAt, ...rest } = newBookmark;
+
+      res.status(200).json({
+        status: true,
+        message: "Learning added to bookmarks",
+        newBookmark,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
+const fetchAllBookmarks = async (req, res) => {
+  const userId = req.userId;
+  try {
+    const { count, rows } = await Bookmark.findAndCountAll({
+      where: {
+        userId,
+      },
+    });
+
+    res.status(200).json({
+      status: true,
+      count,
+      bookmarks: rows,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
+const clearAllBookmarks = async (req, res) => {
+  const userId = req.userId;
+  try {
+    const allBookmarksDeleted = await Bookmark.destroy({
+      where: {
+        userId,
+      },
+    });
+
+    if (!allBookmarksDeleted) {
+      return res.status(204).json({
+        status: false,
+        message: "Failed to clear bookmarks. Try again later",
+      });
+    }
+
+    res.status(200).json({
+      status: true,
+      message: "All bookmarks cleared successfully.",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
+const clearBookmarkById = async (req, res) => {
+  const { bookmarkId } = req.body;
+  try {
+    const existingBookmark = await Bookmark.findOne({
+      where: { id: bookmarkId },
+    });
+
+    if (!existingBookmark) {
+      return res.status(404).json({
+        status: false,
+        message: "Bookmark not found.",
+      });
+    }
+
+    await existingBookmark.destroy().then(() => {
+      return res.status(200).json({
+        status: true,
+        message: "Bookmark removed successfully",
+      });
+    });
+
+    res.status(204).json({
+      status: false,
+      message: "Failed to remove bookmark",
+    });
   } catch (error) {
     res.status(500).json({
       status: false,
@@ -397,4 +546,8 @@ module.exports = {
   userPosts,
   upvotePost,
   getPostByTag,
+  bookmarkLearning,
+  fetchAllBookmarks,
+  clearAllBookmarks,
+  clearBookmarkById,
 };

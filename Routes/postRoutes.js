@@ -10,20 +10,24 @@ const {
   userPosts,
   upvotePost,
   getPostByTag,
+  bookmarkLearning,
 } = require("../Controllers/postControllers");
 
 router.use(validateToken);
+
 router.post("/create", createPost);
+
+router.post("/bookmark/", bookmarkLearning);
 
 router.put("/:id/update", updatePost);
 
-router.delete("/:id/delete", deletePost);
+router.delete("/:id/delete", validateToken, deletePost);
 
 router.get("/all/:page", allPosts);
 
 router.get("/:id/allPosts/:page", userPosts);
 
-router.post("/:id/upvote", upvotePost);
+router.put("/:id/upvote", upvotePost);
 
 router.get("/:tag/:page", getPostByTag);
 

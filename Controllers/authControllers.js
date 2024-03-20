@@ -27,7 +27,6 @@ const registerUser = async (req, res) => {
           username,
           password: hashedPassword,
           email,
-          domain,
         });
 
         return res.status(200).json({
@@ -77,17 +76,16 @@ const loginUser = async (req, res) => {
         secretKey
       );
 
+      const { password, createdAt, updatedAt, ...reqUserData } =
+        user.dataValues;
+
       res
         .cookie("access_token", accessToken)
         .status(200)
         .json({
           status: true,
-          message: `Hii, ${user.username}. Welcome Back !! (Signed In Successfully.)`,
-          user: {
-            username: user.username,
-            email: user.email,
-            id: user.id,
-          },
+          message: `Hii, ${user.username} (Signed In Successfully.)`,
+          user: reqUserData,
         });
     } else {
       return res.status(401).json({
@@ -200,13 +198,52 @@ const resetPassword = async (req, res) => {
     } else {
       return res.status(500).json({
         status: true,
-        message: "Internal Server Error",
+        message: "Failed to reset password",
       });
     }
   } catch (err) {
     return res.status(500).json({
       status: false,
       message: "Error during authentication",
+    });
+  }
+};
+
+const changePassword = async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+
+    const existingUser = await User.findOne({
+      where: {
+        id: req.userId,
+      },
+    });
+
+    if (!existingUser) {
+      return res.status(404).json({
+        status: false,
+        message: "User not found",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const updateRes = await existingUser.update({ password: hashedPassword });
+
+    if (updateRes) {
+      return res.status(200).json({
+        status: true,
+        message: "Password changed successfully",
+      });
+    }
+
+    return res.status(400).json({
+      status: false,
+      message: "Failed to change password",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: "Something went wrong, while changing password",
     });
   }
 };
@@ -270,6 +307,55 @@ const signInWithGoogleCredentials = async (req, res) => {
   }
 };
 
+const updateUserProfileDetails = async (req, res) => {
+  try {
+    const id = req.userId;
+    const newData = req.body;
+    const existingUser = await User.findOne({ where: { id } });
+
+    if (!existingUser) {
+      return res
+        .status(500)
+        .json({ status: false, message: "User not found." });
+    }
+
+    const updatedRes = await User.update(newData, { where: { id: id } });
+
+    const updatedUser = { ...existingUser.dataValues, ...newData };
+    const { password, createdAt, updatedAt, ...reqUserData } = updatedUser;
+
+    if (updatedRes) {
+      return res.status(200).json({
+        status: true,
+        message: "Profile Updated Successfully",
+        updatedUser: reqUserData,
+      });
+    }
+
+    return res.status(400).json({
+      status: false,
+      message: "Failed to update user profile",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: false,
+      message: "Something went wrong, while updating user profile.",
+    });
+  }
+};
+
+const userFeedback = (req, res) => {
+  const { learningId, userId } = req.body;
+  try {
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -277,4 +363,7 @@ module.exports = {
   forgotPassword,
   resetPassword,
   signInWithGoogleCredentials,
+  updateUserProfileDetails,
+  changePassword,
+  userFeedback,
 };

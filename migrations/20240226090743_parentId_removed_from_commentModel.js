@@ -5,14 +5,15 @@ const Sequelize = require("sequelize");
  *
  * createTable() => "Users", deps: []
  * createTable() => "Posts", deps: [Users]
+ * createTable() => "Comments", deps: [Users, Posts]
  * createTable() => "UpvoteModels", deps: [Posts, Users]
  *
  */
 
 const info = {
   revision: 1,
-  name: "changes",
-  created: "2024-02-02T04:56:32.724Z",
+  name: "parentId_removed_from_commentModel",
+  created: "2024-02-26T09:07:43.720Z",
   comment: "",
 };
 
@@ -93,6 +94,59 @@ const migrationCommands = (transaction) => [
   {
     fn: "createTable",
     params: [
+      "Comments",
+      {
+        id: {
+          type: Sequelize.UUID,
+          field: "id",
+          allowNull: false,
+          primaryKey: true,
+          defaultValue: Sequelize.UUIDV4,
+        },
+        comment: {
+          type: Sequelize.TEXT("long"),
+          field: "comment",
+          allowNull: true,
+        },
+        repliedToId: {
+          type: Sequelize.STRING,
+          field: "repliedToId",
+          allowNull: true,
+          defaultValue: "-",
+        },
+        createdAt: {
+          type: Sequelize.DATE,
+          field: "createdAt",
+          allowNull: false,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          field: "updatedAt",
+          allowNull: false,
+        },
+        commentedBy: {
+          type: Sequelize.UUID,
+          field: "commentedBy",
+          onUpdate: "CASCADE",
+          onDelete: "SET NULL",
+          references: { model: "Users", key: "id" },
+          allowNull: true,
+        },
+        postId: {
+          type: Sequelize.UUID,
+          field: "postId",
+          onUpdate: "CASCADE",
+          onDelete: "SET NULL",
+          references: { model: "Posts", key: "id" },
+          allowNull: true,
+        },
+      },
+      { transaction },
+    ],
+  },
+  {
+    fn: "createTable",
+    params: [
       "UpvoteModels",
       {
         id: {
@@ -135,6 +189,10 @@ const migrationCommands = (transaction) => [
 ];
 
 const rollbackCommands = (transaction) => [
+  {
+    fn: "dropTable",
+    params: ["Comments", { transaction }],
+  },
   {
     fn: "dropTable",
     params: ["Posts", { transaction }],

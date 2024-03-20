@@ -3,24 +3,29 @@ const Sequelize = require("sequelize");
 /**
  * Actions summary:
  *
- * changeColumn(note) => "Posts"
+ * addColumn(popularity) => "Leaderboards"
  *
  */
 
 const info = {
-  revision: 4,
-  name: "relations",
-  created: "2024-02-01T11:09:18.843Z",
+  revision: 7,
+  name: "Leaderboard_model_popularity_field_added",
+  created: "2024-03-19T09:21:52.407Z",
   comment: "",
 };
 
 const migrationCommands = (transaction) => [
   {
-    fn: "changeColumn",
+    fn: "addColumn",
     params: [
-      "Posts",
-      "note",
-      { type: Sequelize.TEXT("long"), field: "note", allowNull: true },
+      "Leaderboards",
+      "popularity",
+      {
+        type: Sequelize.BIGINT,
+        field: "popularity",
+        allowNull: false,
+        defaultValue: 0,
+      },
       { transaction },
     ],
   },
@@ -28,13 +33,8 @@ const migrationCommands = (transaction) => [
 
 const rollbackCommands = (transaction) => [
   {
-    fn: "changeColumn",
-    params: [
-      "Posts",
-      "note",
-      { type: Sequelize.STRING, field: "note", allowNull: true },
-      { transaction },
-    ],
+    fn: "removeColumn",
+    params: ["Leaderboards", "popularity", { transaction }],
   },
 ];
 

@@ -182,14 +182,6 @@
                     "field": "totalUpvotes",
                     "seqType": "Sequelize.BIGINT"
                 },
-                "popularity": {
-                    "defaultValue": {
-                        "value": 0
-                    },
-                    "allowNull": false,
-                    "field": "popularity",
-                    "seqType": "Sequelize.BIGINT"
-                },
                 "createdAt": {
                     "allowNull": false,
                     "field": "createdAt",
@@ -369,5 +361,5 @@
     "path": "/home/amarsingh/WebDev/React_Dev/litelearnBackend/LiteLearnBackend/migrations/_current.json",
     "backupPath": "/home/amarsingh/WebDev/React_Dev/litelearnBackend/LiteLearnBackend/migrations/_current_bak.json",
     "exists": true,
-    "revision": 7
+    "revision": 6
 }
