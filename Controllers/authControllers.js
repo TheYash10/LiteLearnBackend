@@ -27,7 +27,6 @@ const registerUser = async (req, res) => {
           username,
           password: hashedPassword,
           email,
-          domain,
         });
 
         return res.status(200).json({
@@ -85,7 +84,7 @@ const loginUser = async (req, res) => {
         .status(200)
         .json({
           status: true,
-          message: `Hii, ${user.username}. Welcome Back !! (Signed In Successfully.)`,
+          message: `Hii, ${user.username} (Signed In Successfully.)`,
           user: reqUserData,
         });
     } else {
