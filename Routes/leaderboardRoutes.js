@@ -4,12 +4,13 @@ const {
   fetchleaderboardData,
   fetchLeaderboardDataById,
 } = require("../Controllers/leaderboardController");
+const validateToken = require("../middleware/validateToken.js");
 
 const router = Express.Router();
 
-router.get("/", fetchleaderboardData);
+router.get("/", validateToken, fetchleaderboardData);
 
-router.get("/:id", fetchLeaderboardDataById);
+router.get("/:id", validateToken, fetchLeaderboardDataById);
 
 router.get("/generate", generateLeaderboard);
 
